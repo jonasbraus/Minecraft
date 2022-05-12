@@ -38,7 +38,7 @@ public class Server
 
     //info:
     //[0] = 0: init message
-    //[0] = 1: world transfer [1] = 1: finished
+    //[0] = 1: world transfer [1] = 1: finished, to client
     //[0] = 2: world size
     //[0] = 3: edit block
     //[0] = 4: disconnect player

@@ -1,6 +1,8 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.IO;
+using System.Text;
 using UnityEngine;
 
 public class World : MonoBehaviour
@@ -14,10 +16,48 @@ public class World : MonoBehaviour
     //network
     private Server server;
     [SerializeField] private int transferDelay;
-
     private void Start()
     {
-        CreateChunks();
+        if (File.Exists(Application.dataPath + "\\save.world"))
+        {
+            chunks = new Chunk[worldSize, worldSize];
+            for (int x = 0; x < worldSize; x++)
+            {
+                for (int z = 0; z < worldSize; z++)
+                {
+                    chunks[x, z] = new Chunk(new ChunkCoord(x, z), this);
+                    chunks[x, z].gameObject.transform.SetParent(gameObject.transform);
+                }
+            }
+            
+            StreamReader reader = new StreamReader(Application.dataPath + "\\save.world");
+            for (int xChunk = 0; xChunk < worldSize; xChunk++)
+            {
+                for (int zChunk = 0; zChunk < worldSize; zChunk++)
+                {
+                    byte[] save = Encoding.ASCII.GetBytes(reader.ReadLine());
+                    
+                    int i = 0;
+
+                    for (int y = 0; y < Data.chunkHeight; y++)
+                    {
+                        for (int x = 0; x < Data.chunkWidth; x++)
+                        {
+                            for (int z = 0; z < Data.chunkWidth; z++)
+                            {
+                                chunks[xChunk, zChunk].blocks[x, y, z] = save[i];
+                                i++;
+                            }
+                        }
+                    }
+                }
+            }
+            reader.Close();
+        }
+        else
+        {
+            CreateChunks();   
+        }
         server = new Server(this, transferDelay);
     }
 
@@ -43,6 +83,7 @@ public class World : MonoBehaviour
         }
     }
 
+    
     //return the ID of a block
     public byte GetBlockID(Vector3 positionInWorld)
     {
@@ -141,11 +182,37 @@ public class World : MonoBehaviour
     
     private void OnApplicationQuit()
     {
+        SaveWorld();
         server.Disconnect();
     }
 
 
     private void SaveWorld()
     {
+        StreamWriter writer = new StreamWriter(Application.dataPath + "\\save.world", false);
+        for (int xChunk = 0; xChunk < worldSize; xChunk++)
+        {
+            for (int zChunk = 0; zChunk < worldSize; zChunk++)
+            {
+                byte[] save = new byte[Data.chunkWidth * Data.chunkWidth * Data.chunkHeight];
+                int i = 0;
+
+                for (int y = 0; y < Data.chunkHeight; y++)
+                {
+                    for (int x = 0; x < Data.chunkWidth; x++)
+                    {
+                        for (int z = 0; z < Data.chunkWidth; z++)
+                        {
+                            save[i] = chunks[xChunk, zChunk].blocks[x, y, z];
+                            i++;
+                        }
+                    }
+                }
+
+                writer.WriteLine(Encoding.ASCII.GetString(save));
+                writer.Flush();
+            }
+        }
+        writer.Close();
     }
 }
