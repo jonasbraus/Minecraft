@@ -12,6 +12,7 @@ public class World : MonoBehaviour
     private string name;
     private Dictionary<byte, GameObject> otherPlayers = new Dictionary<byte, GameObject>();
     private Queue<byte> playersToCreate = new Queue<byte>();
+    private Queue<Player.PlayerUpdateData> playersToUpdate = new Queue<Player.PlayerUpdateData>();
 
     //chunks
     private Chunk[,] chunks;
@@ -50,15 +51,18 @@ public class World : MonoBehaviour
             player.transform.SetParent(gameObject.transform);
             otherPlayers.Add(id, player);
         }
+
+        if (playersToUpdate.Count > 0)
+        {
+            Player.PlayerUpdateData data = playersToUpdate.Dequeue();
+            otherPlayers.TryGetValue(data.id, out GameObject g);
+            g.transform.position = data.position;
+        }
     }
 
     public void UpdatePlayerPosition(Vector3 position, byte id)
     {
-        otherPlayers.TryGetValue(id, out GameObject g);
-        if(g != null)
-        {
-            g.transform.position = position;
-        }
+        playersToUpdate.Enqueue(new Player.PlayerUpdateData(id, position));
     }
 
     public void AddPlayer(byte id)

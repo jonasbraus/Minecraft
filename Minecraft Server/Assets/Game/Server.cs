@@ -138,23 +138,36 @@ public class Server
 
                 if (data[0] == 7)
                 {
-                    string xS = data[1] + "," + data[2];
-                    string yS = data[3] + "," + data[4];
-                    string zS = data[5] + "," + data[6];
+                    byte[] positionASCII = new byte[data.Length - 1];
+                    for (int i = 0; i < data.Length - 1; i++)
+                    {
+                        positionASCII[i] = data[i + 1];
+                    }
 
-                    float x = float.Parse(xS);
-                    float y = float.Parse(yS);
-                    float z = float.Parse(zS);
+                    string[] positionString = Encoding.ASCII.GetString(positionASCII).Split(' ');
+                    float x = float.Parse(positionString[0]);
+                    float y = float.Parse(positionString[1]);
+                    float z = float.Parse(positionString[2]);
 
                     int id = GetPlayerID(endPoint);
-                    
+
                     playerPositions[id] = new Vector3(x, y, z);
+
+                    string sendPosition = x + " " + y + " " + z;
+                    byte[] sendPositionASCII = Encoding.ASCII.GetBytes(sendPosition);
+                    byte[] send = new byte[sendPositionASCII.Length + 2];
+                    send[0] = 7;
+                    send[1] = (byte)id;
+                    for (int i = 2; i < send.Length; i++)
+                    {
+                        send[i] = sendPositionASCII[i - 2];
+                    }
 
                     foreach (IPEndPoint e in players)
                     {
                         if (id != GetPlayerID(e))
                         {
-                            Send(new byte[]{7, data[1], data[2], data[3], data[4], data[5], data[6], (byte)id}, e);
+                            Send(send, e);
                         }
                     }
                 }

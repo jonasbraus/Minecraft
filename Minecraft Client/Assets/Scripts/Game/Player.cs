@@ -232,5 +232,17 @@ public class Player : MonoBehaviour
             return false;
         }
     }
+
+    public class PlayerUpdateData
+    {
+        public PlayerUpdateData(byte id, Vector3 position)
+        {
+            this.id = id;
+            this.position = position;
+        }
+        
+        public byte id;
+        public Vector3 position;
+    }
 }
 
