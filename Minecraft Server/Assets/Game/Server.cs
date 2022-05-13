@@ -73,6 +73,14 @@ public class Server
 
                     if (tempEndPoint != null)
                     {
+                        foreach (IPEndPoint e in players)
+                        {
+                            if (i != GetPlayerID(e))
+                            {
+                                Send(new byte[]{4, (byte)i}, e);
+                            }
+                        }
+                        
                         players.Remove(tempEndPoint);
                         Console.WriteLine(playerNames[i] + " left the game" + "\n");
                         playerNames.RemoveAt(i);

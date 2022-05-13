@@ -20,7 +20,7 @@ public class World : MonoBehaviour
 
     //blocks
     [SerializeField] private BlockData[] blockData;
-    
+
     //network
     private Client client;
     private string ip;
@@ -32,6 +32,11 @@ public class World : MonoBehaviour
         ip = PlayerPrefs.GetString("serverIP");
         port = int.Parse(PlayerPrefs.GetString("port"));
         client = new Client(ip, port, this, name);
+    }
+
+    public void RemovePlayer(byte id)
+    {
+        playersToUpdate.Enqueue(new Player.PlayerUpdateData(id, Vector3.zero, true));
     }
 
     private void Update()
@@ -47,7 +52,8 @@ public class World : MonoBehaviour
             byte id = playersToCreate.Dequeue();
             GameObject player = Instantiate(playerPrefab);
             player.transform.position = new Vector3((byte)player.transform.position.x,
-                GetHeight((byte)player.transform.position.x, (byte)player.transform.position.z) + 2, (byte)player.transform.position.z);
+                GetHeight((byte)player.transform.position.x, (byte)player.transform.position.z) + 2,
+                (byte)player.transform.position.z);
             player.transform.SetParent(gameObject.transform);
             otherPlayers.Add(id, player);
         }
@@ -56,13 +62,21 @@ public class World : MonoBehaviour
         {
             Player.PlayerUpdateData data = playersToUpdate.Dequeue();
             otherPlayers.TryGetValue(data.id, out GameObject g);
-            g.transform.position = data.position;
+            if (g != null)
+            {
+                g.transform.position = data.position;
+                if (data.destroy)
+                {
+                    Destroy(g);
+                    otherPlayers.Remove(data.id);
+                }
+            }
         }
     }
 
     public void UpdatePlayerPosition(Vector3 position, byte id)
     {
-        playersToUpdate.Enqueue(new Player.PlayerUpdateData(id, position));
+        playersToUpdate.Enqueue(new Player.PlayerUpdateData(id, position, false));
     }
 
     public void AddPlayer(byte id)
@@ -79,7 +93,7 @@ public class World : MonoBehaviour
     {
         chunks[x, z] = new Chunk(material, new ChunkCoord(x, z), this, blocks);
     }
-    
+
     //creates an array of chunks
     public void CreateChunks()
     {
@@ -99,7 +113,7 @@ public class World : MonoBehaviour
     public byte GetBlockID(Vector3 positionInWorld)
     {
         byte height = GetHeight((int)positionInWorld.x, (int)positionInWorld.z);
-        
+
         //world pass
         if (positionInWorld.x < 0 || positionInWorld.y < 0 || positionInWorld.z < 0 ||
             positionInWorld.x >= worldSize * Data.chunkWidth || positionInWorld.y > height ||
@@ -123,7 +137,7 @@ public class World : MonoBehaviour
         {
             return 2;
         }
-        
+
         if ((int)positionInWorld.y < height)
         {
             return 4;
@@ -131,7 +145,7 @@ public class World : MonoBehaviour
 
         return 0;
     }
-    
+
     //returns if a block is on the position
     public bool CheckBlock(Vector3 positionInWorld)
     {
@@ -142,7 +156,7 @@ public class World : MonoBehaviour
             return false;
         }
 
-        
+
         if (positionInWorld.x < 0 || positionInWorld.y < 0 || positionInWorld.z < 0 ||
             positionInWorld.x >= worldSize * Data.chunkWidth || positionInWorld.y >= Data.chunkHeight ||
             positionInWorld.z >= worldSize * Data.chunkWidth)
@@ -167,13 +181,13 @@ public class World : MonoBehaviour
 
         return true;
     }
-    
+
     //return textures array of a block
     public byte[] GetTextures(byte blockID)
     {
         return blockData[blockID].textures;
     }
-    
+
     public byte GetHeight(int x, int z)
     {
         float scale = 0.025f;
@@ -189,9 +203,9 @@ public class World : MonoBehaviour
         byte xInChunk = (byte)(positionInChunk.x);
         byte yInChunk = (byte)positionInChunk.y;
         byte zInChunk = (byte)(positionInChunk.z);
-        
+
         //edit block in chunk
-        if(chunks[chunk.x, chunk.z].blocks[xInChunk, yInChunk, zInChunk] != 1)
+        if (chunks[chunk.x, chunk.z].blocks[xInChunk, yInChunk, zInChunk] != 1)
         {
             chunks[chunk.x, chunk.z].Edit(xInChunk, yInChunk, zInChunk, blockID);
             chunksToUpdate.Enqueue(new ChunkCoord(chunk.x, chunk.z));

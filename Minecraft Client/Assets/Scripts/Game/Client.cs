@@ -187,6 +187,11 @@ public class Client
 
                 world.UpdatePlayerPosition(new Vector3(x, y, z), id);
             }
+
+            if (data[0] == 4)
+            {
+                world.RemovePlayer(data[1]);
+            }
         }
     }
 

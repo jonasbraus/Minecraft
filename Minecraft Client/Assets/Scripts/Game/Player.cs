@@ -235,14 +235,16 @@ public class Player : MonoBehaviour
 
     public class PlayerUpdateData
     {
-        public PlayerUpdateData(byte id, Vector3 position)
+        public PlayerUpdateData(byte id, Vector3 position, bool destroy)
         {
             this.id = id;
             this.position = position;
+            this.destroy = destroy;
         }
         
         public byte id;
         public Vector3 position;
+        public bool destroy;
     }
 }
 
