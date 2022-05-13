@@ -89,12 +89,14 @@ public class Server
                     }
                 }
 
+                //init message / world transfer
                 if (data[0] == 0)
                 {
                     Thread t = new Thread(TransferWorld);
                     t.Start(endPoint);
                 }
 
+                //get the world size (first message from client)
                 if (data[0] == 2)
                 {
                     Send(new byte[] { 2, (byte)world.worldSize }, endPoint);
@@ -112,24 +114,43 @@ public class Server
                     playerPositions.Add(new Vector3(0, 0, 0));
                 }
 
+                //edit a block in world
                 if (data[0] == 3)
                 {
                     ChunkCoord chunk = new ChunkCoord(data[1], data[2]);
                     Vector3 positionInChunk = new Vector3(data[3], data[4], data[5]);
-                    byte blockID = data[6];
+                    Vector3 positionInWorld = new Vector3(chunk.x * Data.chunkWidth + positionInChunk.x,
+                        positionInChunk.y, chunk.z * Data.chunkWidth + positionInChunk.z);
 
-                    world.EditBlock(chunk, positionInChunk, blockID);
-
-                    foreach (IPEndPoint e in players)
+                    //check that there is no player on the block position
+                    bool found = false;
+                    foreach (Vector3 v in playerPositions)
                     {
-                        Send(new byte[]
+                        if (((int)v.x == (int)positionInWorld.x && (int)v.z == (int)positionInWorld.z) &&
+                            ((int)v.y == (int)positionInWorld.y || (int)v.y + 1 == (int)positionInWorld.y))
                         {
-                            3, (byte)chunk.x, (byte)chunk.z,
-                            (byte)positionInChunk.x, (byte)positionInChunk.y, (byte)positionInChunk.z, blockID
-                        }, e);
+                            found = true;
+                        }
+                    }
+
+                    if (!found)
+                    {
+                        byte blockID = data[6];
+                    
+                        world.EditBlock(chunk, positionInChunk, blockID);
+
+                        foreach (IPEndPoint e in players)
+                        {
+                            Send(new byte[]
+                            {
+                                3, (byte)chunk.x, (byte)chunk.z,
+                                (byte)positionInChunk.x, (byte)positionInChunk.y, (byte)positionInChunk.z, blockID
+                            }, e);
+                        }
                     }
                 }
 
+                //a player successfully joined the game...
                 if (data[0] == 6)
                 {
                     int id = GetPlayerID(endPoint);
@@ -139,12 +160,15 @@ public class Server
                     {
                         if (id != GetPlayerID(e))
                         {
+                            //create player objects of that player in every connected client
                             Send(new byte[]{5, (byte)GetPlayerID(e)}, endPoint);
+                            //create player objects of all connected clients in the currently connected client
                             Send(new byte[]{5, (byte)GetPlayerID(endPoint)}, e);
                         }
                     }
                 }
 
+                //update a players position on the server
                 if (data[0] == 7)
                 {
                     byte[] positionASCII = new byte[data.Length - 1];
@@ -172,6 +196,7 @@ public class Server
                         send[i] = sendPositionASCII[i - 2];
                     }
 
+                    //send update to every other client
                     foreach (IPEndPoint e in players)
                     {
                         if (id != GetPlayerID(e))
@@ -181,6 +206,7 @@ public class Server
                     }
                 }
 
+                //update a players rotation on server
                 if (data[0] == 8)
                 {
                     byte[] rotationASCII = new byte[data.Length - 1];
@@ -207,6 +233,7 @@ public class Server
                         send[i] = sendRotationASCII[i - 2];
                     }
 
+                    //send update to every other client
                     foreach (IPEndPoint e in players)
                     {
                         if (id != GetPlayerID(e))
@@ -223,6 +250,7 @@ public class Server
         }
     }
 
+    //returns the id of an player
     private int GetPlayerID(IPEndPoint endPoint)
     {
         int i = 0;
@@ -239,6 +267,7 @@ public class Server
         return -1;
     }
 
+    //starts a tcp client for world transfer
     private void TransferWorld(object o)
     {
         try
@@ -290,6 +319,7 @@ public class Server
         }
     }
 
+    //default send function
     private void Send(byte[] data, IPEndPoint endPoint)
     {
         client.Send(data, data.Length, endPoint);

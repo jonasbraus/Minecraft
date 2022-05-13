@@ -33,6 +33,8 @@ public class Player : MonoBehaviour
     private void Start()
     {
         client = world.GetClient();
+        
+        //lock the cursor
         Cursor.lockState = CursorLockMode.Locked;
         camera = GetComponentInChildren<Camera>();
         transform.position = new Vector3((byte)transform.position.x,
@@ -41,6 +43,7 @@ public class Player : MonoBehaviour
 
     private void Jump()
     {
+        //add velocity up
         verticalMomentum = jumpForce;
         isGrounded = false;
         jumpRequest = false;
@@ -48,6 +51,7 @@ public class Player : MonoBehaviour
 
     private void FixedUpdate()
     {
+        //if space was pressed
         if (jumpRequest)
         {
             Jump();
@@ -56,6 +60,7 @@ public class Player : MonoBehaviour
         CalculateVelocity();
         transform.Translate(velocity, Space.World);
         
+        //check if position or rotation had changed and send an update
         Vector3 position = transform.position;
         Quaternion rotation = transform.rotation;
 
@@ -76,6 +81,7 @@ public class Player : MonoBehaviour
 
     private void Update()
     {
+        //get the player input
         horizontal = Input.GetAxisRaw("Horizontal");
         vertical = Input.GetAxisRaw("Vertical");
         mouseX = Input.GetAxis("Mouse X");
@@ -86,6 +92,7 @@ public class Player : MonoBehaviour
             jumpRequest = true;
         }
 
+        //get the camera up and down movement and clamp it
         rotX -= mouseY * 1.4f;
         rotX = Mathf.Clamp(rotX, -90, 90);
 
@@ -93,6 +100,7 @@ public class Player : MonoBehaviour
         
         transform.Rotate(0, mouseX, 0);
 
+        //send destroy block request to server
         if (Input.GetMouseButtonDown(0))
         {
             if (Physics.Raycast(camera.transform.position, camera.transform.forward, out RaycastHit hit))
@@ -102,6 +110,7 @@ public class Player : MonoBehaviour
             }
         }
         
+        //send build block request to server
         if (Input.GetMouseButtonDown(1))
         {
             if (Physics.Raycast(camera.transform.position, camera.transform.forward, out RaycastHit hit))
@@ -114,24 +123,29 @@ public class Player : MonoBehaviour
 
     private void CalculateVelocity()
     {
+        //check if player can accelerate any faster (there is a max speed)
         if (verticalMomentum > gravity)
         {
             verticalMomentum += Time.fixedDeltaTime * gravity;
         }
 
+        //add velocity for moving, falling and jumping
         velocity = ((transform.forward * vertical) + (transform.right * horizontal)) * Time.fixedDeltaTime * walkSpeed;
         velocity += Vector3.up * verticalMomentum * Time.fixedDeltaTime;
 
+        //check colliders on z axis
         if ((velocity.z > 0 && front) || (velocity.z < 0 && back))
         {
             velocity.z = 0;
         }
 
+        //check colliders on x axis
         if ((velocity.x > 0 && right) || (velocity.x < 0 && left))
         {
             velocity.x = 0;
         }
 
+        //check colliders on y axis
         if (velocity.y < 0)
         {
             velocity.y = CheckDownSpeed(velocity.y);
@@ -146,6 +160,7 @@ public class Player : MonoBehaviour
         }
     }
 
+    //check colliders for -y
     private float CheckDownSpeed(float downSpeed)
     {
         if (
@@ -163,6 +178,7 @@ public class Player : MonoBehaviour
         return downSpeed;
     }
     
+    //check colliders for +y
     private float CheckUpSpeed(float upSpeed)
     {
         if (
@@ -178,6 +194,7 @@ public class Player : MonoBehaviour
         return upSpeed;
     }
 
+    //check colliders for +z
     public bool front
     {
         get
@@ -194,6 +211,7 @@ public class Player : MonoBehaviour
         }
     }
     
+    //check colliders for -z
     public bool back
     {
         get
@@ -210,6 +228,7 @@ public class Player : MonoBehaviour
         }
     }
     
+    //check colliders for -x
     public bool left
     {
         get
@@ -226,6 +245,7 @@ public class Player : MonoBehaviour
         }
     }
     
+    //check colliders for +x
     public bool right
     {
         get
@@ -242,6 +262,7 @@ public class Player : MonoBehaviour
         }
     }
 
+    //stores update data for position and if a player should be removed from the world
     public class PlayerPositionUpdateData
     {
         public PlayerPositionUpdateData(byte id, Vector3 position, bool destroy)
@@ -256,6 +277,7 @@ public class Player : MonoBehaviour
         public bool destroy;
     }
 
+    //stores update data for rotations
     public class PlayerRotationsUpdateData
     {
         public byte id;

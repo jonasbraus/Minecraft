@@ -184,11 +184,13 @@ public class Client
                 world.EditBlock(chunk, positionInChunk, blockID);
             }
 
+            //add a new player
             if (data[0] == 5)
             {
                 world.AddPlayer(data[1]);
             }
 
+            //update a players position
             if (data[0] == 7)
             {
                 byte[] positionASCII = new byte[data.Length - 2];
@@ -207,11 +209,13 @@ public class Client
                 world.UpdatePlayerPosition(new Vector3(x, y, z), id);
             }
 
+            //remove a player from local world
             if (data[0] == 4)
             {
                 world.RemovePlayer(data[1]);
             }
 
+            //update a players rotation
             if (data[0] == 8)
             {
                 byte[] rotationASCII = new byte[data.Length - 2];
@@ -234,6 +238,7 @@ public class Client
         
     }
 
+    //sends an edit block request to server
     public void EditBlock(Vector3 positionInWorld, byte blockID)
     {
         ChunkCoord chunk = new ChunkCoord((int)(positionInWorld.x / Data.chunkWidth),
@@ -247,6 +252,7 @@ public class Client
         Send(new byte[] { 3, (byte)chunk.x, (byte)chunk.z, xInChunk, yInChunk, zInChunk, blockID });
     }
     
+    //default send method
     private void Send(byte[] data)
     {
         client.Send(data, data.Length);

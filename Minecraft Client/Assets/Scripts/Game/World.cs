@@ -31,12 +31,14 @@ public class World : MonoBehaviour
 
     private void Start()
     {
+        //get default information
         name = PlayerPrefs.GetString("userName");
         ip = PlayerPrefs.GetString("serverIP");
         port = int.Parse(PlayerPrefs.GetString("port"));
         client = new Client(ip, port, this, name);
     }
 
+    //removes a player from the game world
     public void RemovePlayer(byte id)
     {
         playersPositionsToUpdate.Enqueue(new Player.PlayerPositionUpdateData(id, Vector3.zero, true));
@@ -44,12 +46,14 @@ public class World : MonoBehaviour
 
     private void Update()
     {
+        //update 1 chunk in list
         if (chunksToUpdate.Count > 0)
         {
             ChunkCoord chunk = chunksToUpdate.Dequeue();
             chunks[chunk.x, chunk.z].Update();
         }
 
+        //create 1 player in list
         if (playersToCreate.Count > 0)
         {
             byte id = playersToCreate.Dequeue();
@@ -61,6 +65,7 @@ public class World : MonoBehaviour
             otherPlayers.Add(id, player);
         }
 
+        //update 1 player position in list
         if (playersPositionsToUpdate.Count > 0)
         {
             Player.PlayerPositionUpdateData data = playersPositionsToUpdate.Dequeue();
@@ -76,6 +81,7 @@ public class World : MonoBehaviour
             }
         }
 
+        //update 1 player rotation in list
         if (playersRotationsToUpdate.Count > 0)
         {
             Player.PlayerRotationsUpdateData data = playersRotationsToUpdate.Dequeue();
@@ -87,32 +93,37 @@ public class World : MonoBehaviour
         }
     }
 
+    //enqueue player position update to list
     public void UpdatePlayerPosition(Vector3 position, byte id)
     {
         playersPositionsToUpdate.Enqueue(new Player.PlayerPositionUpdateData(id, position, false));
     }
 
+    //enqueue player rotation update to list
     public void UpdatePlayerRotation(Quaternion rotation, byte id)
     {
         playersRotationsToUpdate.Enqueue(new Player.PlayerRotationsUpdateData(id, rotation));
     }
 
+    //enqueue player create data to list
     public void AddPlayer(byte id)
     {
         playersToCreate.Enqueue(id);
     }
 
+    //creates the array for chunk objects
     public void CreateChunkArray()
     {
         chunks = new Chunk[worldSize, worldSize];
     }
 
+    //initialized a chunk
     public void InitChunk(int x, int z, byte[,,] blocks)
     {
         chunks[x, z] = new Chunk(material, new ChunkCoord(x, z), this, blocks);
     }
 
-    //creates an array of chunks
+    //initialized the chunk objects
     public void CreateChunks()
     {
         for (int x = 0; x < worldSize; x++)
@@ -206,6 +217,7 @@ public class World : MonoBehaviour
         return blockData[blockID].textures;
     }
 
+    //get the perlin noise height
     public byte GetHeight(int x, int z)
     {
         float scale = 0.025f;
@@ -216,6 +228,7 @@ public class World : MonoBehaviour
         return height;
     }
 
+    //edit a block in local chunk storage
     public void EditBlock(ChunkCoord chunk, Vector3 positionInChunk, byte blockID)
     {
         byte xInChunk = (byte)(positionInChunk.x);
