@@ -7,11 +7,12 @@ public class World : MonoBehaviour
 {
     //basic
     [SerializeField] private Material material;
+    [SerializeField] private GameObject playerPrefab;
     public int worldSize;
     private string name;
-    private string ip;
-    private int port;
-    
+    private Dictionary<byte, GameObject> otherPlayers = new Dictionary<byte, GameObject>();
+    private Queue<byte> playersToCreate = new Queue<byte>();
+
     //chunks
     private Chunk[,] chunks;
     private Queue<ChunkCoord> chunksToUpdate = new Queue<ChunkCoord>();
@@ -21,6 +22,8 @@ public class World : MonoBehaviour
     
     //network
     private Client client;
+    private string ip;
+    private int port;
 
     private void Start()
     {
@@ -37,6 +40,21 @@ public class World : MonoBehaviour
             ChunkCoord chunk = chunksToUpdate.Dequeue();
             chunks[chunk.x, chunk.z].Update();
         }
+
+        if (playersToCreate.Count > 0)
+        {
+            byte id = playersToCreate.Dequeue();
+            GameObject player = Instantiate(playerPrefab);
+            player.transform.position = new Vector3((byte)player.transform.position.x,
+                GetHeight((byte)player.transform.position.x, (byte)player.transform.position.z) + 2, (byte)player.transform.position.z);
+            player.transform.SetParent(gameObject.transform);
+            otherPlayers.Add(id, player);
+        }
+    }
+
+    public void AddPlayer(byte id)
+    {
+        playersToCreate.Enqueue(id);
     }
 
     public void CreateChunkArray()
@@ -143,7 +161,7 @@ public class World : MonoBehaviour
         return blockData[blockID].textures;
     }
     
-    private byte GetHeight(int x, int z)
+    public byte GetHeight(int x, int z)
     {
         float scale = 0.025f;
         byte perlinHeight = 10;

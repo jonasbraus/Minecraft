@@ -145,6 +145,11 @@ public class Client
                 
                 world.EditBlock(chunk, positionInChunk, blockID);
             }
+
+            if (data[0] == 5)
+            {
+                world.AddPlayer(data[1]);
+            }
         }
     }
 

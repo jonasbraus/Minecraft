@@ -41,7 +41,7 @@ public class Server
     //[0] = 2: world size
     //[0] = 3: edit block
     //[0] = 4: disconnect player
-    //[0] = 5: 
+    //[0] = 5: create new player in client
     //[0] = 6: player ready
     //[0] = 7: 
 
@@ -123,8 +123,15 @@ public class Server
                 {
                     int id = GetPlayerID(endPoint);
                     Console.WriteLine(playerNames[id] + " joined" + "\n");
-                    
-                    
+
+                    foreach (IPEndPoint e in players)
+                    {
+                        if (id != GetPlayerID(e))
+                        {
+                            Send(new byte[]{5, (byte)GetPlayerID(e)}, endPoint);
+                            Send(new byte[]{5, (byte)GetPlayerID(endPoint)}, e);
+                        }
+                    }
                 }
             }
             catch (Exception e)

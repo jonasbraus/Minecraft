@@ -22,6 +22,8 @@ public class Player : MonoBehaviour
         client = world.GetClient();
         Cursor.lockState = CursorLockMode.Locked;
         camera = GetComponentInChildren<Camera>();
+        transform.position = new Vector3((byte)transform.position.x,
+            world.GetHeight((byte)transform.position.x, (byte)transform.position.z) + 2, (byte)transform.position.z);
     }
 
     private void FixedUpdate()
