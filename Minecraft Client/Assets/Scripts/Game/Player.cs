@@ -25,6 +25,7 @@ public class Player : MonoBehaviour
     private float gravity = -20f;
     private Camera camera = null;
     private Vector3 lastPosition = new Vector3();
+    private Quaternion lastRotation = new Quaternion();
     
     //network
     private Client client = null;
@@ -56,13 +57,21 @@ public class Player : MonoBehaviour
         transform.Translate(velocity, Space.World);
         
         Vector3 position = transform.position;
+        Quaternion rotation = transform.rotation;
 
         if (lastPosition.x != position.x || lastPosition.y != position.y || lastPosition.z != position.z)
         {
             client.SendPositionUpdate(transform.position);
         }
+
+        if (rotation.w != lastRotation.w || rotation.x != lastRotation.x || rotation.y != lastRotation.y ||
+            rotation.z != lastRotation.z)
+        {
+            client.SendRotationUpdate(transform.rotation);
+        }
         
         lastPosition = new Vector3(transform.position.x, transform.position.y, transform.position.z);
+        lastRotation = transform.rotation;
     }
 
     private void Update()
@@ -233,9 +242,9 @@ public class Player : MonoBehaviour
         }
     }
 
-    public class PlayerUpdateData
+    public class PlayerPositionUpdateData
     {
-        public PlayerUpdateData(byte id, Vector3 position, bool destroy)
+        public PlayerPositionUpdateData(byte id, Vector3 position, bool destroy)
         {
             this.id = id;
             this.position = position;
@@ -245,6 +254,18 @@ public class Player : MonoBehaviour
         public byte id;
         public Vector3 position;
         public bool destroy;
+    }
+
+    public class PlayerRotationsUpdateData
+    {
+        public byte id;
+        public Quaternion rotation;
+        
+        public PlayerRotationsUpdateData(byte id, Quaternion rotation)
+        {
+            this.id = id;
+            this.rotation = rotation;
+        }
     }
 }
 

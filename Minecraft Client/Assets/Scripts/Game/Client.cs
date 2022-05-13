@@ -148,6 +148,25 @@ public class Client
 
         Send(send);
     }
+
+    public void SendRotationUpdate(Quaternion rotation)
+    {
+        string x = rotation.x.ToString("n4");
+        string y = rotation.y.ToString("n4");
+        string z = rotation.z.ToString("n4");
+        string w = rotation.w.ToString("n4");
+
+        string sendRotation = x + " " + y + " " + z + " " + w;
+        byte[] sendRotationASCII = Encoding.ASCII.GetBytes(sendRotation);
+        byte[] send = new byte[sendRotationASCII.Length + 1];
+        send[0] = 8;
+        for (int i = 1; i < send.Length; i++)
+        {
+            send[i] = sendRotationASCII[i - 1];
+        }
+        
+        Send(send);
+    }
     
     private void Receive()
     {
@@ -192,7 +211,27 @@ public class Client
             {
                 world.RemovePlayer(data[1]);
             }
+
+            if (data[0] == 8)
+            {
+                byte[] rotationASCII = new byte[data.Length - 2];
+                for (int i = 0; i < data.Length - 2; i++)
+                {
+                    rotationASCII[i] = data[i + 2];
+                }
+
+                byte id = data[1];
+                
+                string[] rotationString = Encoding.ASCII.GetString(rotationASCII).Split(' ');
+                float x = float.Parse(rotationString[0]);
+                float y = float.Parse(rotationString[1]);
+                float z = float.Parse(rotationString[2]);
+                float w = float.Parse(rotationString[3]);
+                
+                world.UpdatePlayerRotation(new Quaternion(x, y, z, w), id);
+            }
         }
+        
     }
 
     public void EditBlock(Vector3 positionInWorld, byte blockID)

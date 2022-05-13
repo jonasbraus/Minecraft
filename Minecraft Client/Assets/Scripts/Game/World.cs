@@ -12,7 +12,10 @@ public class World : MonoBehaviour
     private string name;
     private Dictionary<byte, GameObject> otherPlayers = new Dictionary<byte, GameObject>();
     private Queue<byte> playersToCreate = new Queue<byte>();
-    private Queue<Player.PlayerUpdateData> playersToUpdate = new Queue<Player.PlayerUpdateData>();
+    private Queue<Player.PlayerPositionUpdateData> playersPositionsToUpdate = new Queue<Player.PlayerPositionUpdateData>();
+    
+    private Queue<Player.PlayerRotationsUpdateData> playersRotationsToUpdate =
+        new Queue<Player.PlayerRotationsUpdateData>();
 
     //chunks
     private Chunk[,] chunks;
@@ -36,7 +39,7 @@ public class World : MonoBehaviour
 
     public void RemovePlayer(byte id)
     {
-        playersToUpdate.Enqueue(new Player.PlayerUpdateData(id, Vector3.zero, true));
+        playersPositionsToUpdate.Enqueue(new Player.PlayerPositionUpdateData(id, Vector3.zero, true));
     }
 
     private void Update()
@@ -58,9 +61,9 @@ public class World : MonoBehaviour
             otherPlayers.Add(id, player);
         }
 
-        if (playersToUpdate.Count > 0)
+        if (playersPositionsToUpdate.Count > 0)
         {
-            Player.PlayerUpdateData data = playersToUpdate.Dequeue();
+            Player.PlayerPositionUpdateData data = playersPositionsToUpdate.Dequeue();
             otherPlayers.TryGetValue(data.id, out GameObject g);
             if (g != null)
             {
@@ -72,11 +75,26 @@ public class World : MonoBehaviour
                 }
             }
         }
+
+        if (playersRotationsToUpdate.Count > 0)
+        {
+            Player.PlayerRotationsUpdateData data = playersRotationsToUpdate.Dequeue();
+            otherPlayers.TryGetValue(data.id, out GameObject g);
+            if (g != null)
+            {
+                g.transform.rotation = data.rotation;
+            }
+        }
     }
 
     public void UpdatePlayerPosition(Vector3 position, byte id)
     {
-        playersToUpdate.Enqueue(new Player.PlayerUpdateData(id, position, false));
+        playersPositionsToUpdate.Enqueue(new Player.PlayerPositionUpdateData(id, position, false));
+    }
+
+    public void UpdatePlayerRotation(Quaternion rotation, byte id)
+    {
+        playersRotationsToUpdate.Enqueue(new Player.PlayerRotationsUpdateData(id, rotation));
     }
 
     public void AddPlayer(byte id)

@@ -45,6 +45,7 @@ public class Server
     //[0] = 5: create new player in client
     //[0] = 6: player ready
     //[0] = 7: player position update
+    //[0] = 8: player rotation update
 
     private void Receive()
     {
@@ -169,6 +170,41 @@ public class Server
                     for (int i = 2; i < send.Length; i++)
                     {
                         send[i] = sendPositionASCII[i - 2];
+                    }
+
+                    foreach (IPEndPoint e in players)
+                    {
+                        if (id != GetPlayerID(e))
+                        {
+                            Send(send, e);
+                        }
+                    }
+                }
+
+                if (data[0] == 8)
+                {
+                    byte[] rotationASCII = new byte[data.Length - 1];
+                    for (int i = 0; i < data.Length - 1; i++)
+                    {
+                        rotationASCII[i] = data[i + 1];
+                    }
+                    
+                    string[] rotationString = Encoding.ASCII.GetString(rotationASCII).Split(' ');
+                    string x = rotationString[0];
+                    string y = rotationString[1];
+                    string z = rotationString[2];
+                    string w = rotationString[3];
+
+                    byte id = (byte)GetPlayerID(endPoint);
+                    string sendRotation = x + " " + y + " " + z + " " + w;
+                    byte[] sendRotationASCII = Encoding.ASCII.GetBytes(sendRotation);
+                    byte[] send = new byte[sendRotationASCII.Length + 2];
+                    send[0] = 8;
+                    send[1] = id;
+                    
+                    for (int i = 2; i < send.Length; i++)
+                    {
+                        send[i] = sendRotationASCII[i - 2];
                     }
 
                     foreach (IPEndPoint e in players)
