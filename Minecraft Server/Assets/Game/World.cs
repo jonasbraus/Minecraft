@@ -58,6 +58,7 @@ public class World : MonoBehaviour
         {
             CreateChunks();   
         }
+        Console.WriteLine("world loaded! \n");
         server = new Server(this, transferDelay);
     }
 
@@ -214,5 +215,6 @@ public class World : MonoBehaviour
             }
         }
         writer.Close();
+        Console.WriteLine("world saved! \n");
     }
 }

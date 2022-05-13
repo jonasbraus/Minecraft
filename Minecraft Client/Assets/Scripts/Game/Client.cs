@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.IO;
 using System.Net;
 using System.Net.Sockets;
 using System.Text;
@@ -26,9 +27,8 @@ public class Client
         //setup client
         client = new UdpClient();
         client.DontFragment = false;
-
-        IPAddress address;
-        if (IPAddress.TryParse(hostname, out address))
+        
+        if (IPAddress.TryParse(hostname, out IPAddress address))
         {
             address = IPAddress.Parse(hostname);
             client.Connect(address, port);
@@ -50,7 +50,7 @@ public class Client
         }
 
         Send(sendList.ToArray());
-        IPEndPoint endPoint = new IPEndPoint(IPAddress.Any, 0);
+        IPEndPoint endPoint = new IPEndPoint(IPAddress.Any, 8051);
         byte[] data = client.Receive(ref endPoint);
         if (data[0] == 2)
         {
@@ -64,10 +64,23 @@ public class Client
         byte xChunk = 0;
         byte zChunk = 0;
         
+        
+        TcpClient tcpClient = new TcpClient();
+        if (address != null)
+        {
+            address = IPAddress.Parse(hostname);
+            tcpClient.Connect(address, port);
+        }
+        else
+        {
+            tcpClient.Connect(hostname, port);
+        }
+
+        StreamReader reader = new StreamReader(tcpClient.GetStream());
+        
         while (true)
         {
-            endPoint = new IPEndPoint(IPAddress.Any, 0);
-            data = client.Receive(ref endPoint);
+            data = Encoding.ASCII.GetBytes(reader.ReadLine());
 
             if (data[0] == 1)
             {
@@ -102,23 +115,26 @@ public class Client
                     zChunk = 0;
                 }
             }
-            
-            Send(new byte[]{5});
         }
         
+        reader.Close();
+        tcpClient.Close();
+
         world.CreateChunks();
         //world transfer finished
         
         //start listening
         receiveThread = new Thread(Receive);
         receiveThread.Start();
+        
+        Send(new byte[]{6});
     }
 
     private void Receive()
     {
         while(true)
         {
-            IPEndPoint endPoint = new IPEndPoint(IPAddress.Any, 0);
+            IPEndPoint endPoint = new IPEndPoint(IPAddress.Any, 8051);
             byte[] data = client.Receive(ref endPoint);
 
             if (data[0] == 3)

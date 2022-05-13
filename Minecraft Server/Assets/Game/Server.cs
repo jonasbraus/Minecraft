@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.IO;
 using System.Net;
 using System.Net.Sockets;
 using System.Text;
@@ -17,9 +18,7 @@ public class Server
     private int transferDelay;
     private List<IPEndPoint> players = new List<IPEndPoint>();
     private List<string> playerNames = new List<string>();
-    private List<bool> nextTransfer = new List<bool>();
     private Thread receiveThread;
-    private List<Thread> transferThreads = new List<Thread>();
 
     public Server(World world, int transferDelay)
     {
@@ -31,9 +30,9 @@ public class Server
         client.DontFragment = false;
 
         //start listening
-        receiveThread = new Thread(Receive); //info:
+        receiveThread = new Thread(Receive);
         receiveThread.Start();
-        //0: init message
+        Console.WriteLine("server running on port 8051" + "\n");
     }
 
     //info:
@@ -42,22 +41,18 @@ public class Server
     //[0] = 2: world size
     //[0] = 3: edit block
     //[0] = 4: disconnect player
-    //[0] = 5: next transfer
+    //[0] = 5: 
+    //[0] = 6: player ready
+    //[0] = 7: 
 
     private void Receive()
     {
-        try
+        while (true)
         {
-            while (true)
+            try
             {
-                IPEndPoint endPoint = new IPEndPoint(IPAddress.Any, 0);
+                IPEndPoint endPoint = new IPEndPoint(IPAddress.Any, 8051);
                 byte[] data = client.Receive(ref endPoint);
-
-                if (data[0] == 5)
-                {
-                    int id = GetPlayerID(endPoint);
-                    nextTransfer[id] = true;
-                }
 
                 if (data[0] == 4)
                 {
@@ -78,17 +73,15 @@ public class Server
                     if (tempEndPoint != null)
                     {
                         players.Remove(tempEndPoint);
-                        Console.WriteLine(playerNames[i] + " left the game");
+                        Console.WriteLine(playerNames[i] + " left the game" + "\n");
                         playerNames.RemoveAt(i);
-                        nextTransfer.RemoveAt(i);
+                 
                     }
-
                 }
 
                 if (data[0] == 0)
                 {
                     Thread t = new Thread(TransferWorld);
-                    transferThreads.Add(t);
                     t.Start(endPoint);
                 }
 
@@ -106,8 +99,6 @@ public class Server
                     //add player
                     players.Add(endPoint);
                     playerNames.Add(name);
-                    nextTransfer.Add(false);
-                    Console.WriteLine(name + " joined the game");
                 }
 
                 if (data[0] == 3)
@@ -127,11 +118,19 @@ public class Server
                         }, e);
                     }
                 }
+
+                if (data[0] == 6)
+                {
+                    int id = GetPlayerID(endPoint);
+                    Console.WriteLine(playerNames[id] + " joined" + "\n");
+                    
+                    
+                }
             }
-        }
-        catch (Exception e)
-        {
-            
+            catch (Exception e)
+            {
+                
+            }
         }
     }
 
@@ -153,44 +152,53 @@ public class Server
 
     private void TransferWorld(object o)
     {
-        IPEndPoint endPoint = (IPEndPoint)o;
-        int id = GetPlayerID(endPoint);
-
-        Console.WriteLine("begin world transfer for " + playerNames[id]);
-        for (int xChunk = 0; xChunk < world.worldSize; xChunk++)
+        try
         {
-            for (int zChunk = 0; zChunk < world.worldSize; zChunk++)
+            IPEndPoint endPoint = (IPEndPoint)o;
+            int id = GetPlayerID(endPoint);
+
+            TcpListener listener = new TcpListener(IPAddress.Any, 8051);
+            listener.Start();
+            TcpClient tcpClient = listener.AcceptTcpClient();
+            listener.Stop();
+            // Console.WriteLine("tcp connected for " + playerNames[id] + "\n");
+            StreamWriter writer = new StreamWriter(tcpClient.GetStream());
+            writer.AutoFlush = true;
+
+            Console.WriteLine("begin world transfer for " + playerNames[id] + "\n");
+            for (int xChunk = 0; xChunk < world.worldSize; xChunk++)
             {
-                nextTransfer[id] = false;
-                
-                byte[] send = new byte[Data.chunkWidth * Data.chunkWidth * Data.chunkHeight + 2];
-                send[0] = 1;
-                send[1] = 0;
-                int i = 2;
-                        
-                for (int y = 0; y < Data.chunkHeight; y++)
+                for (int zChunk = 0; zChunk < world.worldSize; zChunk++)
                 {
-                    for (int x = 0; x < Data.chunkWidth; x++)
+                    byte[] send = new byte[Data.chunkWidth * Data.chunkWidth * Data.chunkHeight + 2];
+                    send[0] = 1;
+                    send[1] = 0;
+                    int i = 2;
+
+                    for (int y = 0; y < Data.chunkHeight; y++)
                     {
-                        for (int z = 0; z < Data.chunkWidth; z++)
+                        for (int x = 0; x < Data.chunkWidth; x++)
                         {
-                            send[i] = world.chunks[xChunk, zChunk].blocks[x, y, z];
-                            i++;
+                            for (int z = 0; z < Data.chunkWidth; z++)
+                            {
+                                send[i] = world.chunks[xChunk, zChunk].blocks[x, y, z];
+                                i++;
+                            }
                         }
                     }
+                    writer.WriteLine(Encoding.ASCII.GetString(send));
                 }
-                Send(send, endPoint);
-
-                while (!nextTransfer[id])
-                {
-                }
-
-                nextTransfer[id] = false;
             }
-        }
 
-        Send(new byte[] { 1, 1 }, endPoint);
-        Console.WriteLine("world transfer finished for " + playerNames[id]);
+            writer.WriteLine(Encoding.ASCII.GetString(new byte[] { 1, 1 }));
+            Console.WriteLine("world transfer finished for " + playerNames[id] + "\n");
+            writer.Close();
+            tcpClient.Close();
+        }
+        catch (Exception e)
+        {
+            
+        }
     }
 
     private void Send(byte[] data, IPEndPoint endPoint)
@@ -201,13 +209,7 @@ public class Server
     public void Disconnect()
     {
         receiveThread.Abort();
-        for (int i = 0; i < transferThreads.Count; i++)
-        {
-            if (transferThreads[i] != null)
-            {
-                transferThreads[i].Abort();
-            }
-        }
+
         client.Close();
     }
 }
