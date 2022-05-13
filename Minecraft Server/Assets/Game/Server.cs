@@ -12,6 +12,7 @@ public class Server
 {
     //game
     private World world;
+    private List<Vector3> playerPositions = new List<Vector3>();
 
     //network
     private UdpClient client;
@@ -43,7 +44,7 @@ public class Server
     //[0] = 4: disconnect player
     //[0] = 5: create new player in client
     //[0] = 6: player ready
-    //[0] = 7: 
+    //[0] = 7: player position update
 
     private void Receive()
     {
@@ -75,7 +76,7 @@ public class Server
                         players.Remove(tempEndPoint);
                         Console.WriteLine(playerNames[i] + " left the game" + "\n");
                         playerNames.RemoveAt(i);
-                 
+                        playerPositions.RemoveAt(i);
                     }
                 }
 
@@ -99,6 +100,7 @@ public class Server
                     //add player
                     players.Add(endPoint);
                     playerNames.Add(name);
+                    playerPositions.Add(new Vector3(0, 0, 0));
                 }
 
                 if (data[0] == 3)
@@ -130,6 +132,29 @@ public class Server
                         {
                             Send(new byte[]{5, (byte)GetPlayerID(e)}, endPoint);
                             Send(new byte[]{5, (byte)GetPlayerID(endPoint)}, e);
+                        }
+                    }
+                }
+
+                if (data[0] == 7)
+                {
+                    string xS = data[1] + "," + data[2];
+                    string yS = data[3] + "," + data[4];
+                    string zS = data[5] + "," + data[6];
+
+                    float x = float.Parse(xS);
+                    float y = float.Parse(yS);
+                    float z = float.Parse(zS);
+
+                    int id = GetPlayerID(endPoint);
+                    
+                    playerPositions[id] = new Vector3(x, y, z);
+
+                    foreach (IPEndPoint e in players)
+                    {
+                        if (id != GetPlayerID(e))
+                        {
+                            Send(new byte[]{7, data[1], data[2], data[3], data[4], data[5], data[6], (byte)id}, e);
                         }
                     }
                 }

@@ -12,6 +12,7 @@ public class Player : MonoBehaviour
     [SerializeField] private World world;
     private Camera camera = null;
     private Rigidbody rigidbody;
+    private Vector3 lastPosition = new Vector3();
     
     //network
     private Client client = null;
@@ -30,6 +31,15 @@ public class Player : MonoBehaviour
     {
         transform.Translate(Input.GetAxisRaw("Horizontal") * moveSpeed * Time.fixedDeltaTime, 0, 
             Input.GetAxisRaw("Vertical") * moveSpeed * Time.fixedDeltaTime);
+        
+        Vector3 position = transform.position;
+
+        if (lastPosition.x != position.x || lastPosition.y != position.y || lastPosition.z != position.z)
+        {
+            client.SendPositionUpdate(transform.position);
+        }
+        
+        lastPosition = new Vector3(transform.position.x, transform.position.y, transform.position.z);
     }
 
     private void Update()

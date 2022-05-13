@@ -130,6 +130,24 @@ public class Client
         Send(new byte[]{6});
     }
 
+    //1.12 == [1] = 1, [2] = 12
+    public void SendPositionUpdate(Vector3 position)
+    {
+        string x = position.x.ToString("F");
+        string y = position.y.ToString("F");
+        string z = position.z.ToString("F");
+        byte xV = byte.Parse(x.Split(',')[0]);
+        byte xN = byte.Parse(x.Split(',')[1]);
+        
+        byte yV = byte.Parse(y.Split(',')[0]);
+        byte yN = byte.Parse(y.Split(',')[1]);
+        
+        byte zV = byte.Parse(z.Split(',')[0]);
+        byte zN = byte.Parse(z.Split(',')[1]);
+
+        Send(new byte[] { 7, xV, xN, yV, yN, zV, zN });
+    }
+    
     private void Receive()
     {
         while(true)
@@ -149,6 +167,21 @@ public class Client
             if (data[0] == 5)
             {
                 world.AddPlayer(data[1]);
+            }
+
+            if (data[0] == 7)
+            {
+                string xS = data[1] + "," + data[2];
+                string yS = data[3] + "," + data[4];
+                string zS = data[5] + "," + data[6];
+
+                float x = float.Parse(xS);
+                float y = float.Parse(yS);
+                float z = float.Parse(zS);
+
+                byte id = data[7];
+                
+                world.UpdatePlayerPosition(new Vector3(x, y, z), id);
             }
         }
     }

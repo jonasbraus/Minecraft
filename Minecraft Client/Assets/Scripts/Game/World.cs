@@ -52,6 +52,15 @@ public class World : MonoBehaviour
         }
     }
 
+    public void UpdatePlayerPosition(Vector3 position, byte id)
+    {
+        otherPlayers.TryGetValue(id, out GameObject g);
+        if(g != null)
+        {
+            g.transform.position = position;
+        }
+    }
+
     public void AddPlayer(byte id)
     {
         playersToCreate.Enqueue(id);
