@@ -8,17 +8,26 @@ public class Player : MonoBehaviour
     //game
     [SerializeField] private float mouseSpeed;
     [SerializeField] private float moveSpeed;
+    [SerializeField] private float jumpForce;
     [SerializeField] private World world;
     private Camera camera = null;
+    private Rigidbody rigidbody;
     
     //network
     private Client client = null;
     
     private void Start()
     {
+        rigidbody = GetComponent<Rigidbody>();
         client = world.GetClient();
         Cursor.lockState = CursorLockMode.Locked;
         camera = GetComponentInChildren<Camera>();
+    }
+
+    private void FixedUpdate()
+    {
+        transform.Translate(Input.GetAxisRaw("Horizontal") * moveSpeed * Time.fixedDeltaTime, 0, 
+            Input.GetAxisRaw("Vertical") * moveSpeed * Time.fixedDeltaTime);
     }
 
     private void Update()
@@ -26,24 +35,17 @@ public class Player : MonoBehaviour
         transform.Rotate(0, Input.GetAxis("Mouse X") * mouseSpeed, 0);
         camera.transform.Rotate(-Input.GetAxis("Mouse Y") * mouseSpeed, 0, 0);
 
-        float up = 0;
-        if (Input.GetKey(KeyCode.Space))
+        if (Input.GetKeyDown(KeyCode.Space))
         {
-            up = 1;
-        }
-
-        if (Input.GetKey(KeyCode.LeftShift))
-        {
-            up = -1;
+            if (Physics.Raycast(transform.position, Vector3.down, 0.96f))
+            {
+                rigidbody.AddForce(Vector3.up * jumpForce, ForceMode.Impulse);
+            }
         }
         
-        transform.Translate(Input.GetAxis("Horizontal") * moveSpeed * Time.deltaTime, up * moveSpeed * Time.deltaTime, 
-            Input.GetAxis("Vertical") * moveSpeed * Time.deltaTime);
-
         if (Input.GetMouseButtonDown(0))
         {
-            RaycastHit hit;
-            if (Physics.Raycast(camera.transform.position, camera.transform.forward, out hit))
+            if (Physics.Raycast(camera.transform.position, camera.transform.forward, out RaycastHit hit))
             {
                 hit.point += camera.transform.forward / 10;
                 client.EditBlock(hit.point, 0);
@@ -52,8 +54,7 @@ public class Player : MonoBehaviour
         
         if (Input.GetMouseButtonDown(1))
         {
-            RaycastHit hit;
-            if (Physics.Raycast(camera.transform.position, camera.transform.forward, out hit))
+            if (Physics.Raycast(camera.transform.position, camera.transform.forward, out RaycastHit hit))
             {
                 hit.point -= camera.transform.forward / 10;
                 client.EditBlock(hit.point, 4);
