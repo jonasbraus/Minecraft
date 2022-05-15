@@ -177,7 +177,10 @@ public class Player : MonoBehaviour
 
         if (transform.position.y < 0)
         {
-            world.ShowDeadScreen();
+            if(Time.timeScale > 0)
+            {
+                world.ShowDeadScreen();
+            }
         }
 
         if (Input.GetKeyDown(KeyCode.Escape))
