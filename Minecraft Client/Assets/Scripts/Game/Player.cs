@@ -24,13 +24,14 @@ public class Player : MonoBehaviour
     private float verticalMomentum = 0;
     private bool jumpRequest;
     private bool isGrounded = true;
+    private float lastTriggerR = 0, lastTriggerL = 0;
 
     private float gravity = -20f;
     private Camera camera = null;
     private Vector3 lastPosition = new Vector3();
     private Quaternion lastRotation = new Quaternion();
-    private float lastTriggerL = 0, lastTriggerR = 0;
-    
+
+    private byte currentBlock = 1;
     
     //network
     private Client client = null;
@@ -93,7 +94,6 @@ public class Player : MonoBehaviour
         mouseX = Input.GetAxis("Mouse X");
         mouseY = Input.GetAxis("Mouse Y");
         
-        
         //Sprinting
         if (Input.GetKeyDown(KeyCode.LeftShift) || Input.GetButtonDown("Left Stick Button"))
         {
@@ -140,6 +140,33 @@ public class Player : MonoBehaviour
         }
 
         lastTriggerR = Input.GetAxis("Right Trigger");
+
+        if (currentBlock == 1)
+        {
+            if (Input.GetAxisRaw("Mouse ScrollWheel") < 0)
+            {
+                currentBlock = (byte)(world.blockData.Length - 1);
+            }
+            else
+            {
+                currentBlock += (byte)(Input.GetAxisRaw("Mouse ScrollWheel") * 10);
+            }
+        }
+        else if (currentBlock == world.blockData.Length - 1)
+        {
+            if (Input.GetAxisRaw("Mouse ScrollWheel") > 0)
+            {
+                currentBlock = (byte)(1);
+            }
+            else
+            {
+                currentBlock += (byte)(Input.GetAxisRaw("Mouse ScrollWheel") * 10);
+            }
+        }
+        else
+        {
+            currentBlock += (byte)(Input.GetAxisRaw("Mouse ScrollWheel") * 10);
+        }
         
         //send build block request to server
         if (Input.GetMouseButtonDown(1) || (Input.GetAxis("Left Trigger") > 0 && lastTriggerL == 0))
@@ -147,11 +174,13 @@ public class Player : MonoBehaviour
             if (Physics.Raycast(camera.transform.position, camera.transform.forward, out RaycastHit hit, 8))
             {
                 hit.point -= camera.transform.forward / 10;
-                client.EditBlock(hit.point, 6);
+                client.EditBlock(hit.point, currentBlock);
             }
         }
 
         lastTriggerL = Input.GetAxis("Left Trigger");
+
+
 
         if (transform.position.y < 0)
         {
