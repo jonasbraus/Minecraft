@@ -20,6 +20,9 @@ public class World : MonoBehaviour
 
     private bool backToMenuRequest = false;
 
+    [SerializeField] private Player player;
+    [SerializeField] private GameObject deadScreen;
+
     //chunks
     private Chunk[,] chunks;
     private Queue<ChunkCoord> chunksToUpdate = new Queue<ChunkCoord>();
@@ -268,5 +271,30 @@ public class World : MonoBehaviour
     {
         public string name;
         public byte[] textures = new byte[6];
+    }
+    
+        
+    public void ShowDeadScreen()
+    {
+        Cursor.visible = true;
+        Cursor.lockState = CursorLockMode.None;
+        deadScreen.SetActive(true);
+        Time.timeScale = 0;
+    }
+
+    public void RespawnButton()
+    {
+        Cursor.visible = false;
+        Cursor.lockState = CursorLockMode.Confined;
+        Time.timeScale = 1;
+        player.transform.position = player.GetDefaultPlayerPosition();
+        deadScreen.SetActive(false);
+    }
+
+    public void QuitButton()
+    {
+        client.Disconnect();
+        SceneManager.LoadScene("Login");
+        deadScreen.SetActive(false);
     }
 }

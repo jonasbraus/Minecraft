@@ -525,6 +525,7 @@ MonoBehaviour:
   playerPrefab: {fileID: 4093383343133656139, guid: f648243c6b14d514d92cde4ec433276b, type: 3}
   worldSize: 0
   player: {fileID: 1789911870}
+  deadScreen: {fileID: 1849105196}
   blockData:
   - name: Air
     textures: 
@@ -1161,7 +1162,7 @@ GameObject:
   - component: {fileID: 1849105199}
   - component: {fileID: 1849105198}
   m_Layer: 5
-  m_Name: Background
+  m_Name: DeadScreen
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
