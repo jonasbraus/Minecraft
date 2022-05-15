@@ -21,8 +21,8 @@ public class World : MonoBehaviour
     [SerializeField] private int transferDelay;
     private void Start()
     {
-        randomOffsetX = Random.Range(0, 10000);
-        randomOffsetZ = Random.Range(0, 10000);
+        // randomOffsetX = Random.Range(0, 10000);
+        // randomOffsetZ = Random.Range(0, 10000);
 
         if (File.Exists(Application.dataPath + "\\save.world"))
         {
@@ -62,7 +62,8 @@ public class World : MonoBehaviour
         }
         else
         {
-            CreateChunks();   
+            CreateChunks();
+            CreateTrees();
         }
         Console.WriteLine("world loaded! \n");
         server = new Server(this, transferDelay);
@@ -89,7 +90,79 @@ public class World : MonoBehaviour
             }
         }
     }
+    
+    
+    //Create Trees
+    private void CreateTrees()
+    {
+        for (int x = 4; x < worldSize * Data.chunkWidth - 4; x++)
+        {
+            for (int z = 4; z < worldSize * Data.chunkWidth - 4; z++)
+            {
+                if (CheckTree(x, z))
+                {
+                    ChunkCoord chunk = new ChunkCoord((int)(x / Data.chunkWidth),
+                        (int)(z / Data.chunkWidth));
+                    int xInChunk = (int)(x - chunk.x * Data.chunkWidth);
+                    int yInChunk = (int)(GetHeight(x, z));
+                    int zInChunk = (int)(z - chunk.z * Data.chunkWidth);
 
+                    int height = Random.Range(5, 9);
+
+                    for (int i = 0; i <= height; i++)
+                    {
+                        chunks[chunk.x, chunk.z].blocks[xInChunk, yInChunk + i, zInChunk] = 7;
+                    }
+                    
+                    chunks[chunk.x, chunk.z].blocks[xInChunk, yInChunk + height + 2, zInChunk] = 6;
+                    
+                    for (int ty = -1; ty <= 0; ty++)
+                    {
+                        for (int tx = -2; tx <= 2; tx++)
+                        {
+                            for (int tz = -2; tz <= 2; tz++)
+                            {
+                                ChunkCoord tempChunk = new ChunkCoord((int)((x - tx) / Data.chunkWidth),
+                                    (int)((z - tz) / Data.chunkWidth));
+                                int xTempInChunk = (int)((x - tx) - tempChunk.x * Data.chunkWidth);
+                                int zTempInChunk = (int)((z - tz) - tempChunk.z * Data.chunkWidth);
+
+                                if (chunks[tempChunk.x, tempChunk.z].blocks[xTempInChunk, yInChunk + height + ty,
+                                        zTempInChunk] != 7)
+                                {
+                                    chunks[tempChunk.x, tempChunk.z].blocks[xTempInChunk, yInChunk + height + ty,
+                                        zTempInChunk] = 6;
+                                }
+                            }
+                        }
+                    }
+                    
+                    for (int tx = -1; tx <= 1; tx++)
+                    {
+                        for (int tz = -1; tz <= 1; tz++)
+                        {
+                            ChunkCoord tempChunk = new ChunkCoord((int)((x - tx) / Data.chunkWidth),
+                                (int)((z - tz) / Data.chunkWidth));
+                            int xTempInChunk = (int)((x - tx) - tempChunk.x * Data.chunkWidth);
+                            int zTempInChunk = (int)((z - tz) - tempChunk.z * Data.chunkWidth);
+
+                            if (chunks[tempChunk.x, tempChunk.z].blocks[xTempInChunk, yInChunk + height + 1,
+                                    zTempInChunk] != 7)
+                            {
+                                chunks[tempChunk.x, tempChunk.z].blocks[xTempInChunk, yInChunk + height + 1,
+                                    zTempInChunk] = 6;
+                            }
+                        }
+                    }
+                    
+                    
+                    
+                    
+
+                }
+            }
+        }
+    }
     
     //return the ID of a block
     public byte GetBlockID(Vector3 positionInWorld)
@@ -174,6 +247,20 @@ public class World : MonoBehaviour
         return height;
     }
 
+    private bool CheckTree(int x, int z)
+    {
+        float scale = .99f;
+        float threshold = .96f;
+        
+        if (Mathf.PerlinNoise((x) * scale + 0.1f, (z) * scale + 0.1f) >= threshold)
+        {
+            return true;
+        }
+        
+        return false;
+
+    }
+
     public void EditBlock(ChunkCoord chunk, Vector3 positionInChunk, byte blockID)
     {
         byte xInChunk = (byte)(positionInChunk.x);
@@ -189,7 +276,7 @@ public class World : MonoBehaviour
     
     private void OnApplicationQuit()
     {
-        SaveWorld();
+        //SaveWorld();
         server.Disconnect();
     }
 
