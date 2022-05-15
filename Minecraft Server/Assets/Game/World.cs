@@ -11,6 +11,7 @@ public class World : MonoBehaviour
     //basic
     [SerializeField] public int worldSize;
     private int randomOffsetX, randomOffsetZ;
+    private int seed = 0;
     
     //chunks
     public Chunk[,] chunks;
@@ -20,9 +21,10 @@ public class World : MonoBehaviour
     [SerializeField] private int transferDelay;
     private void Start()
     {
+        Random.InitState(seed);
         randomOffsetX = Random.Range(0, 10000);
         randomOffsetZ = Random.Range(0, 10000);
-        
+
         if (File.Exists(Application.dataPath + "\\save.world"))
         {
             chunks = new Chunk[worldSize, worldSize];
