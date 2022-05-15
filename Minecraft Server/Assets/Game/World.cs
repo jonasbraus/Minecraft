@@ -12,7 +12,8 @@ public class World : MonoBehaviour
     [SerializeField] public int worldSize;
     private int randomOffsetX, randomOffsetZ;
     private int seed = 0;
-    
+    private string dataPath;
+
     //chunks
     public Chunk[,] chunks;
 
@@ -21,6 +22,8 @@ public class World : MonoBehaviour
     [SerializeField] private int transferDelay;
     private void Start()
     {
+        dataPath = Application.dataPath;
+        
         randomOffsetX = Random.Range(0, 10000);
         randomOffsetZ = Random.Range(0, 10000);
 
@@ -283,7 +286,7 @@ public class World : MonoBehaviour
 
     private void SaveWorld()
     {
-        StreamWriter writer = new StreamWriter(Application.dataPath + "\\save.world", false);
+        StreamWriter writer = new StreamWriter(dataPath + "\\save.world", false);
         for (int xChunk = 0; xChunk < worldSize; xChunk++)
         {
             for (int zChunk = 0; zChunk < worldSize; zChunk++)
