@@ -29,6 +29,7 @@ public class Player : MonoBehaviour
     private Camera camera = null;
     private Vector3 lastPosition = new Vector3();
     private Quaternion lastRotation = new Quaternion();
+    private float lastTriggerL = 0, lastTriggerR = 0;
     
     
     //network
@@ -92,13 +93,14 @@ public class Player : MonoBehaviour
         mouseX = Input.GetAxis("Mouse X");
         mouseY = Input.GetAxis("Mouse Y");
         
+        
         //Sprinting
-        if (Input.GetKeyDown(KeyCode.LeftShift))
+        if (Input.GetKeyDown(KeyCode.LeftShift) || Input.GetButtonDown("Left Stick Button"))
         {
             walkSpeed = sprintSpeed;
         }
 
-        if (Input.GetKeyUp(KeyCode.LeftShift))
+        if (Input.GetKeyUp(KeyCode.LeftShift) || Input.GetButtonUp("Left Stick Button"))
         {
             walkSpeed = defaultSpeed;
         }
@@ -128,7 +130,7 @@ public class Player : MonoBehaviour
         transform.Rotate(0, mouseX * Time.timeScale, 0);
 
         //send destroy block request to server
-        if (Input.GetMouseButtonDown(0))
+        if (Input.GetMouseButtonDown(0) || (Input.GetAxis("Right Trigger") > 0 && lastTriggerR == 0))
         {
             if (Physics.Raycast(camera.transform.position, camera.transform.forward, out RaycastHit hit, 8))
             {
@@ -136,9 +138,11 @@ public class Player : MonoBehaviour
                 client.EditBlock(hit.point, 0);
             }
         }
+
+        lastTriggerR = Input.GetAxis("Right Trigger");
         
         //send build block request to server
-        if (Input.GetMouseButtonDown(1))
+        if (Input.GetMouseButtonDown(1) || (Input.GetAxis("Left Trigger") > 0 && lastTriggerL == 0))
         {
             if (Physics.Raycast(camera.transform.position, camera.transform.forward, out RaycastHit hit, 8))
             {
@@ -146,6 +150,8 @@ public class Player : MonoBehaviour
                 client.EditBlock(hit.point, 6);
             }
         }
+
+        lastTriggerL = Input.GetAxis("Left Trigger");
 
         if (transform.position.y < 0)
         {
