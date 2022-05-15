@@ -253,6 +253,11 @@ public class Client
         //send Chunk with position in Chunk
         Send(new byte[] { 3, (byte)chunk.x, (byte)chunk.z, xInChunk, yInChunk, zInChunk, blockID });
     }
+
+    public void SendDeadMessage()
+    {
+        Send(new byte[]{10});
+    }
     
     //default send method
     private void Send(byte[] data)

@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Threading;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
@@ -154,7 +155,7 @@ public class World : MonoBehaviour
     //returns if a block is on the position
     public bool CheckBlock(Vector3 positionInWorld)
     {
-        if (positionInWorld.x < -1 || positionInWorld.z < -1 ||
+        if (positionInWorld.x < 0 || positionInWorld.z < 0 ||
             positionInWorld.x > worldSize * Data.chunkWidth ||
             positionInWorld.z > worldSize * Data.chunkWidth)
         {
@@ -255,12 +256,6 @@ public class World : MonoBehaviour
         client.Disconnect();
     }
 
-
-    public void BackToMenu()
-    {
-        SceneManager.LoadScene("Scenes/Login", LoadSceneMode.Single);
-    }
-    
     public Client GetClient()
     {
         return client;
@@ -277,6 +272,7 @@ public class World : MonoBehaviour
         
     public void ShowDeadScreen()
     {
+        client.SendDeadMessage();
         Cursor.visible = true;
         Cursor.lockState = CursorLockMode.None;
         deadScreen.SetActive(true);
@@ -310,6 +306,7 @@ public class World : MonoBehaviour
     
     public void QuitButton()
     {
+        Time.timeScale = 1;
         client.Disconnect();
         SceneManager.LoadScene("Login");
         deadScreen.SetActive(false);

@@ -47,6 +47,7 @@ public class Server
     //[0] = 7: player position update
     //[0] = 8: player rotation update
     //[0] = 9: Save the World
+    //[0] = 10: Player died
 
     private void Receive()
     {
@@ -248,6 +249,12 @@ public class Server
                 if (data[0] == 9)
                 {
                     world.SaveWorld();
+                }
+                
+                //player died
+                if (data[0] == 10)
+                {
+                    Console.WriteLine(playerNames[GetPlayerID(endPoint)] + " died!");
                 }
             }
             catch (Exception e)
