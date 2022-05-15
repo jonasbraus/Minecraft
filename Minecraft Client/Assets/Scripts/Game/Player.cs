@@ -9,6 +9,7 @@ public class Player : MonoBehaviour
     [SerializeField] private float mouseSpeed;
     [SerializeField] private float defaultSpeed = 5;
     [SerializeField] private float sprintSpeed = 8;
+    [SerializeField] private float sneakSpeed = 2;
     private float walkSpeed;
     [SerializeField] private float jumpForce;
     [SerializeField] private World world;
@@ -90,13 +91,25 @@ public class Player : MonoBehaviour
         vertical = Input.GetAxisRaw("Vertical");
         mouseX = Input.GetAxis("Mouse X");
         mouseY = Input.GetAxis("Mouse Y");
-
+        
+        //Sprinting
         if (Input.GetKeyDown(KeyCode.LeftShift))
         {
             walkSpeed = sprintSpeed;
         }
 
         if (Input.GetKeyUp(KeyCode.LeftShift))
+        {
+            walkSpeed = defaultSpeed;
+        }
+        
+        //Sneaking
+        if (Input.GetKeyDown(KeyCode.LeftControl))
+        {
+            walkSpeed = sneakSpeed;
+        }
+
+        if (Input.GetKeyUp(KeyCode.LeftControl))
         {
             walkSpeed = defaultSpeed;
         }
