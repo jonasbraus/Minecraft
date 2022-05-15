@@ -30,7 +30,7 @@ public class Player : MonoBehaviour
     private Vector3 lastPosition = new Vector3();
     private Quaternion lastRotation = new Quaternion();
 
-    private byte currentBlock = 0;
+    private byte currentBlock = 1;
     
     //network
     private Client client = null;
