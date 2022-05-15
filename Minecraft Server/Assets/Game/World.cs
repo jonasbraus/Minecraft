@@ -21,8 +21,8 @@ public class World : MonoBehaviour
     [SerializeField] private int transferDelay;
     private void Start()
     {
-        // randomOffsetX = Random.Range(0, 10000);
-        // randomOffsetZ = Random.Range(0, 10000);
+        randomOffsetX = Random.Range(0, 10000);
+        randomOffsetZ = Random.Range(0, 10000);
 
         if (File.Exists(Application.dataPath + "\\save.world"))
         {
@@ -167,7 +167,7 @@ public class World : MonoBehaviour
     //return the ID of a block
     public byte GetBlockID(Vector3 positionInWorld)
     {
-        byte height = GetHeight((int)positionInWorld.x + randomOffsetX, (int)positionInWorld.z + randomOffsetZ);
+        byte height = GetHeight((int)positionInWorld.x, (int)positionInWorld.z);
         
         //world pass
         if (positionInWorld.x < 0 || positionInWorld.y < 0 || positionInWorld.z < 0 ||
@@ -243,7 +243,7 @@ public class World : MonoBehaviour
         byte perlinHeight = 10;
         byte groundHeight = 10;
 
-        byte height = (byte)(Mathf.PerlinNoise((x) * scale + 0.1f, (z) * scale + 0.1f) * perlinHeight + groundHeight);
+        byte height = (byte)(Mathf.PerlinNoise((x + randomOffsetX) * scale + 0.1f, (z + randomOffsetZ) * scale + 0.1f) * perlinHeight + groundHeight);
         return height;
     }
 
@@ -276,7 +276,7 @@ public class World : MonoBehaviour
     
     private void OnApplicationQuit()
     {
-        //SaveWorld();
+        SaveWorld();
         server.Disconnect();
     }
 
