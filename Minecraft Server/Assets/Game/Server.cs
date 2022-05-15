@@ -254,7 +254,7 @@ public class Server
                 //player died
                 if (data[0] == 10)
                 {
-                    Console.WriteLine(playerNames[GetPlayerID(endPoint)] + " died!");
+                    Console.WriteLine(playerNames[GetPlayerID(endPoint)] + " died! \n");
                 }
             }
             catch (Exception e)

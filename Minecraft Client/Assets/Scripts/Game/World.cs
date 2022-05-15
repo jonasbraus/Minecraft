@@ -156,8 +156,8 @@ public class World : MonoBehaviour
     public bool CheckBlock(Vector3 positionInWorld)
     {
         if (positionInWorld.x < 0 || positionInWorld.z < 0 ||
-            positionInWorld.x > worldSize * Data.chunkWidth ||
-            positionInWorld.z > worldSize * Data.chunkWidth)
+            positionInWorld.x >= worldSize * Data.chunkWidth ||
+            positionInWorld.z >= worldSize * Data.chunkWidth)
         {
             return false;
         }
