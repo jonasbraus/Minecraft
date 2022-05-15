@@ -62,7 +62,7 @@ public class World : MonoBehaviour
         }
         else
         {
-            CreateChunks();   
+            CreateChunks();
         }
         Console.WriteLine("world loaded! \n");
         server = new Server(this, transferDelay);
