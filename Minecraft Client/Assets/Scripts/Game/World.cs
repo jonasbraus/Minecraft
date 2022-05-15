@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class World : MonoBehaviour
 {
@@ -16,6 +17,8 @@ public class World : MonoBehaviour
     
     private Queue<Player.PlayerRotationsUpdateData> playersRotationsToUpdate =
         new Queue<Player.PlayerRotationsUpdateData>();
+
+    private bool backToMenuRequest = false;
 
     //chunks
     private Chunk[,] chunks;
@@ -90,6 +93,12 @@ public class World : MonoBehaviour
             {
                 g.transform.rotation = data.rotation;
             }
+        }
+        
+        //go bock to menu
+        if (backToMenuRequest)
+        {
+            SceneManager.LoadScene("Scenes/Login", LoadSceneMode.Single);
         }
     }
 
@@ -217,15 +226,25 @@ public class World : MonoBehaviour
         return blockData[blockID].textures;
     }
 
-    //get the perlin noise height
+    //get the height
     public byte GetHeight(int x, int z)
     {
-        float scale = 0.025f;
-        byte perlinHeight = 10;
-        byte groundHeight = 10;
+        int xChunk = x / Data.chunkWidth;
+        int zChunk = z / Data.chunkWidth;
 
-        byte height = (byte)(Mathf.PerlinNoise((x) * scale + 0.1f, (z) * scale + 0.1f) * perlinHeight + groundHeight);
-        return height;
+        int xInChunk = x - (xChunk * Data.chunkWidth);
+        int zInChunk = z - (zChunk * Data.chunkWidth);
+
+        Chunk c = chunks[xChunk, zChunk];
+        for (int y = 0; y < Data.chunkHeight; y++)
+        {
+            if (c.blocks[xInChunk, y, zInChunk] == 0)
+            {
+                return (byte)(y - 1);
+            }
+        }
+
+        return 250;
     }
 
     //edit a block in local chunk storage
@@ -270,6 +289,11 @@ public class World : MonoBehaviour
     }
 
 
+    public void BackToMenu()
+    {
+        SceneManager.LoadScene("Scenes/Login", LoadSceneMode.Single);
+    }
+    
     public Client GetClient()
     {
         return client;

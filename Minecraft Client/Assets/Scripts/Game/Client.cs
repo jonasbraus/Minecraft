@@ -1,5 +1,7 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Data;
 using System.IO;
 using System.Net;
 using System.Net.Sockets;
@@ -17,7 +19,7 @@ public class Client
     private UdpClient client;
     private int port;
     private Thread receiveThread;
-    
+
     public Client(string hostname, int port, World world, string name)
     {
         this.port = port;
@@ -27,7 +29,7 @@ public class Client
         //setup client
         client = new UdpClient();
         client.DontFragment = false;
-        
+
         if (IPAddress.TryParse(hostname, out IPAddress address))
         {
             address = IPAddress.Parse(hostname);
@@ -48,7 +50,7 @@ public class Client
         {
             sendList.Add(b);
         }
-
+        
         Send(sendList.ToArray());
         IPEndPoint endPoint = new IPEndPoint(IPAddress.Any, 8051);
         byte[] data = client.Receive(ref endPoint);
@@ -257,6 +259,7 @@ public class Client
     {
         client.Send(data, data.Length);
     }
+    
 
     public void Disconnect()
     {

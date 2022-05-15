@@ -4,11 +4,13 @@ using System.Collections.Generic;
 using System.IO;
 using System.Text;
 using UnityEngine;
+using Random = UnityEngine.Random;
 
 public class World : MonoBehaviour
 {
     //basic
     [SerializeField] public int worldSize;
+    private int randomOffsetX, randomOffsetZ;
     
     //chunks
     public Chunk[,] chunks;
@@ -18,6 +20,9 @@ public class World : MonoBehaviour
     [SerializeField] private int transferDelay;
     private void Start()
     {
+        randomOffsetX = Random.Range(0, 10000);
+        randomOffsetZ = Random.Range(0, 10000);
+        
         if (File.Exists(Application.dataPath + "\\save.world"))
         {
             chunks = new Chunk[worldSize, worldSize];
@@ -88,7 +93,7 @@ public class World : MonoBehaviour
     //return the ID of a block
     public byte GetBlockID(Vector3 positionInWorld)
     {
-        byte height = GetHeight((int)positionInWorld.x, (int)positionInWorld.z);
+        byte height = GetHeight((int)positionInWorld.x + randomOffsetX, (int)positionInWorld.z + randomOffsetZ);
         
         //world pass
         if (positionInWorld.x < 0 || positionInWorld.y < 0 || positionInWorld.z < 0 ||
