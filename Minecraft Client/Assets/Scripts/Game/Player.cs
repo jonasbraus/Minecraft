@@ -130,7 +130,7 @@ public class Player : MonoBehaviour
         //send destroy block request to server
         if (Input.GetMouseButtonDown(0))
         {
-            if (Physics.Raycast(camera.transform.position, camera.transform.forward, out RaycastHit hit))
+            if (Physics.Raycast(camera.transform.position, camera.transform.forward, out RaycastHit hit, 8))
             {
                 hit.point += camera.transform.forward / 10;
                 client.EditBlock(hit.point, 0);
@@ -140,7 +140,7 @@ public class Player : MonoBehaviour
         //send build block request to server
         if (Input.GetMouseButtonDown(1))
         {
-            if (Physics.Raycast(camera.transform.position, camera.transform.forward, out RaycastHit hit))
+            if (Physics.Raycast(camera.transform.position, camera.transform.forward, out RaycastHit hit, 8))
             {
                 hit.point -= camera.transform.forward / 10;
                 client.EditBlock(hit.point, 6);
