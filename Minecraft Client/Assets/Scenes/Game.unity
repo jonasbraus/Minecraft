@@ -539,6 +539,8 @@ MonoBehaviour:
     textures: 000000000000
   - name: Sand
     textures: 0a0a0a0a0a0a
+  - name: Leafs
+    textures: 101010101010
 --- !u!1 &1353507538
 GameObject:
   m_ObjectHideFlags: 0
