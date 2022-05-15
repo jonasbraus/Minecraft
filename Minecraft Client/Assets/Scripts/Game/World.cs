@@ -297,4 +297,24 @@ public class World : MonoBehaviour
         SceneManager.LoadScene("Login");
         deadScreen.SetActive(false);
     }
+    
+    //return the ID of a block
+    public byte GetBlockID(Vector3 positionInWorld)
+    {
+        if (!(positionInWorld.x < 0 || positionInWorld.y < 0 || positionInWorld.z < 0 ||
+             positionInWorld.x >= worldSize * Data.chunkWidth || positionInWorld.y >= Data.chunkHeight ||
+             positionInWorld.z >= worldSize * Data.chunkWidth))
+        {
+            ChunkCoord chunk = new ChunkCoord((int)(positionInWorld.x / Data.chunkWidth),
+                (int)(positionInWorld.z / Data.chunkWidth));
+
+            int xInChunk = (int)(positionInWorld.x - chunk.x * Data.chunkWidth);
+            int yInChunk = (int)positionInWorld.y;
+            int zInChunk = (int)(positionInWorld.z - chunk.z * Data.chunkWidth);
+
+            return chunks[chunk.x, chunk.z].blocks[xInChunk, yInChunk, zInChunk];   
+        }
+
+        return 0;
+    }
 }

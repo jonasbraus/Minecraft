@@ -116,7 +116,7 @@ public class Player : MonoBehaviour
             if (Physics.Raycast(camera.transform.position, camera.transform.forward, out RaycastHit hit))
             {
                 hit.point -= camera.transform.forward / 10;
-                client.EditBlock(hit.point, 5);
+                client.EditBlock(hit.point, 6);
             }
         }
 
