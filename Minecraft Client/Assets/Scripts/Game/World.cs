@@ -147,43 +147,6 @@ public class World : MonoBehaviour
         }
     }
 
-    //return the ID of a block
-    public byte GetBlockID(Vector3 positionInWorld)
-    {
-        byte height = GetHeight((int)positionInWorld.x, (int)positionInWorld.z);
-
-        //world pass
-        if (positionInWorld.x < 0 || positionInWorld.y < 0 || positionInWorld.z < 0 ||
-            positionInWorld.x >= worldSize * Data.chunkWidth || positionInWorld.y > height ||
-            positionInWorld.z >= worldSize * Data.chunkWidth)
-        {
-            return 0;
-        }
-
-        //chunk pass
-        if ((int)positionInWorld.y == height)
-        {
-            return 3;
-        }
-
-        if ((int)positionInWorld.y == 0)
-        {
-            return 1;
-        }
-
-        if ((int)positionInWorld.y > height - 3)
-        {
-            return 2;
-        }
-
-        if ((int)positionInWorld.y < height)
-        {
-            return 4;
-        }
-
-        return 0;
-    }
-
     //returns if a block is on the position
     public bool CheckBlock(Vector3 positionInWorld)
     {
