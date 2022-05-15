@@ -27,6 +27,7 @@ public class Player : MonoBehaviour
     private Vector3 lastPosition = new Vector3();
     private Quaternion lastRotation = new Quaternion();
     
+    
     //network
     private Client client = null;
     
@@ -37,8 +38,7 @@ public class Player : MonoBehaviour
         //lock the cursor
         Cursor.lockState = CursorLockMode.Locked;
         camera = GetComponentInChildren<Camera>();
-        transform.position = new Vector3((byte)transform.position.x,
-            world.GetHeight((byte)transform.position.x, (byte)transform.position.z) + 2, (byte)transform.position.z);
+        transform.position = GetDefaultPlayerPosition();
     }
 
     private void Jump()
@@ -96,9 +96,9 @@ public class Player : MonoBehaviour
         rotX -= mouseY * 1.4f;
         rotX = Mathf.Clamp(rotX, -90, 90);
 
-        camera.transform.localRotation = Quaternion.Euler(rotX, 0, 0);
+        camera.transform.localRotation = Quaternion.Euler(rotX * Time.timeScale, 0, 0);
         
-        transform.Rotate(0, mouseX, 0);
+        transform.Rotate(0, mouseX * Time.timeScale, 0);
 
         //send destroy block request to server
         if (Input.GetMouseButtonDown(0))
@@ -116,8 +116,13 @@ public class Player : MonoBehaviour
             if (Physics.Raycast(camera.transform.position, camera.transform.forward, out RaycastHit hit))
             {
                 hit.point -= camera.transform.forward / 10;
-                client.EditBlock(hit.point, 4);
+                client.EditBlock(hit.point, 5);
             }
+        }
+
+        if (transform.position.y < 0)
+        {
+            world.ShowDeadScreen();
         }
     }
 
@@ -288,6 +293,12 @@ public class Player : MonoBehaviour
             this.id = id;
             this.rotation = rotation;
         }
+    }
+
+    public Vector3 GetDefaultPlayerPosition()
+    {
+        return new Vector3((byte)transform.position.x,
+            world.GetHeight((byte)transform.position.x, (byte)transform.position.z) + 2, (byte)transform.position.z);
     }
 }
 

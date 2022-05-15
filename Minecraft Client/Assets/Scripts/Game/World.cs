@@ -2,6 +2,9 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
+
+
 
 public class World : MonoBehaviour
 {
@@ -17,6 +20,9 @@ public class World : MonoBehaviour
     private Queue<Player.PlayerRotationsUpdateData> playersRotationsToUpdate =
         new Queue<Player.PlayerRotationsUpdateData>();
 
+    [SerializeField] private Player player;
+    [SerializeField] private GameObject deadScreen;
+    
     //chunks
     private Chunk[,] chunks;
     private Queue<ChunkCoord> chunksToUpdate = new Queue<ChunkCoord>();
@@ -217,15 +223,25 @@ public class World : MonoBehaviour
         return blockData[blockID].textures;
     }
 
-    //get the perlin noise height
+    //get the height
     public byte GetHeight(int x, int z)
     {
-        float scale = 0.025f;
-        byte perlinHeight = 10;
-        byte groundHeight = 10;
+        int xChunk = x / Data.chunkWidth;
+        int zChunk = z / Data.chunkWidth;
 
-        byte height = (byte)(Mathf.PerlinNoise((x) * scale + 0.1f, (z) * scale + 0.1f) * perlinHeight + groundHeight);
-        return height;
+        int xInChunk = x - (xChunk * Data.chunkWidth);
+        int zInChunk = z - (zChunk * Data.chunkWidth);
+
+        Chunk c = chunks[xChunk, zChunk];
+        for (int y = 0; y < Data.chunkHeight; y++)
+        {
+            if (c.blocks[xInChunk, y, zInChunk] == 0)
+            {
+                return (byte)(y - 1);
+            }
+        }
+
+        return 250;
     }
 
     //edit a block in local chunk storage
@@ -281,5 +297,29 @@ public class World : MonoBehaviour
     {
         public string name;
         public byte[] textures = new byte[6];
+    }
+    
+    public void ShowDeadScreen()
+    {
+        Cursor.visible = true;
+        Cursor.lockState = CursorLockMode.None;
+        deadScreen.SetActive(true);
+        Time.timeScale = 0;
+    }
+
+    public void RespawnButton()
+    {
+        Cursor.visible = false;
+        Cursor.lockState = CursorLockMode.Confined;
+        Time.timeScale = 1;
+        player.transform.position = player.GetDefaultPlayerPosition();
+        deadScreen.SetActive(false);
+    }
+
+    public void QuitButton()
+    {
+        client.Disconnect();
+        SceneManager.LoadScene("Login");
+        deadScreen.SetActive(false);
     }
 }
