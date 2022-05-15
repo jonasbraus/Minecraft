@@ -541,6 +541,8 @@ MonoBehaviour:
     textures: 0a0a0a0a0a0a
   - name: Leafs
     textures: 101010101010
+  - name: Log
+    textures: 050506060505
 --- !u!1 &1353507538
 GameObject:
   m_ObjectHideFlags: 0
@@ -1148,7 +1150,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   mouseSpeed: 4
-  walkSpeed: 5
+  defaultSpeed: 5
+  sprintSpeed: 8
+  sneakSpeed: 2
   jumpForce: 8
   world: {fileID: 948138834}
 --- !u!1 &1849105196
