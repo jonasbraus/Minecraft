@@ -7,7 +7,9 @@ public class Player : MonoBehaviour
 {
     //game
     [SerializeField] private float mouseSpeed;
-    [SerializeField] private float walkSpeed = 5;
+    [SerializeField] private float defaultSpeed = 5;
+    [SerializeField] private float sprintSpeed = 8;
+    private float walkSpeed;
     [SerializeField] private float jumpForce;
     [SerializeField] private World world;
     private float playerWidth = 0.15f;
@@ -39,6 +41,8 @@ public class Player : MonoBehaviour
         Cursor.lockState = CursorLockMode.Locked;
         camera = GetComponentInChildren<Camera>();
         transform.position = GetDefaultPlayerPosition();
+
+        walkSpeed = defaultSpeed;
     }
 
     private void Jump()
@@ -87,6 +91,16 @@ public class Player : MonoBehaviour
         mouseX = Input.GetAxis("Mouse X");
         mouseY = Input.GetAxis("Mouse Y");
 
+        if (Input.GetKeyDown(KeyCode.LeftShift))
+        {
+            walkSpeed = sprintSpeed;
+        }
+
+        if (Input.GetKeyUp(KeyCode.LeftShift))
+        {
+            walkSpeed = defaultSpeed;
+        }
+        
         if (isGrounded && Input.GetButton("Jump"))
         {
             jumpRequest = true;
