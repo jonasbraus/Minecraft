@@ -21,7 +21,6 @@ public class World : MonoBehaviour
     [SerializeField] private int transferDelay;
     private void Start()
     {
-        Random.InitState(seed);
         randomOffsetX = Random.Range(0, 10000);
         randomOffsetZ = Random.Range(0, 10000);
 
