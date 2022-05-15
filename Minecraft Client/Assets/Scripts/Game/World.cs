@@ -29,7 +29,7 @@ public class World : MonoBehaviour
     private Queue<ChunkCoord> chunksToUpdate = new Queue<ChunkCoord>();
 
     //blocks
-    [SerializeField] private BlockData[] blockData;
+    [SerializeField] public BlockData[] blockData;
 
     //network
     private Client client;

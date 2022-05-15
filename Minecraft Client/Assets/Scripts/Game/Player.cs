@@ -29,7 +29,8 @@ public class Player : MonoBehaviour
     private Camera camera = null;
     private Vector3 lastPosition = new Vector3();
     private Quaternion lastRotation = new Quaternion();
-    
+
+    private byte currentBlock = 0;
     
     //network
     private Client client = null;
@@ -136,6 +137,33 @@ public class Player : MonoBehaviour
                 client.EditBlock(hit.point, 0);
             }
         }
+
+        if (currentBlock == 1)
+        {
+            if (Input.GetAxisRaw("Mouse ScrollWheel") < 0)
+            {
+                currentBlock = (byte)(world.blockData.Length - 1);
+            }
+            else
+            {
+                currentBlock += (byte)(Input.GetAxisRaw("Mouse ScrollWheel") * 10);
+            }
+        }
+        else if (currentBlock == world.blockData.Length - 1)
+        {
+            if (Input.GetAxisRaw("Mouse ScrollWheel") > 0)
+            {
+                currentBlock = (byte)(1);
+            }
+            else
+            {
+                currentBlock += (byte)(Input.GetAxisRaw("Mouse ScrollWheel") * 10);
+            }
+        }
+        else
+        {
+            currentBlock += (byte)(Input.GetAxisRaw("Mouse ScrollWheel") * 10);
+        }
         
         //send build block request to server
         if (Input.GetMouseButtonDown(1))
@@ -143,7 +171,7 @@ public class Player : MonoBehaviour
             if (Physics.Raycast(camera.transform.position, camera.transform.forward, out RaycastHit hit, 8))
             {
                 hit.point -= camera.transform.forward / 10;
-                client.EditBlock(hit.point, 6);
+                client.EditBlock(hit.point, currentBlock);
             }
         }
 
