@@ -4,8 +4,6 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
-
-
 public class World : MonoBehaviour
 {
     //basic
@@ -20,9 +18,8 @@ public class World : MonoBehaviour
     private Queue<Player.PlayerRotationsUpdateData> playersRotationsToUpdate =
         new Queue<Player.PlayerRotationsUpdateData>();
 
-    [SerializeField] private Player player;
-    [SerializeField] private GameObject deadScreen;
-    
+    private bool backToMenuRequest = false;
+
     //chunks
     private Chunk[,] chunks;
     private Queue<ChunkCoord> chunksToUpdate = new Queue<ChunkCoord>();
@@ -97,6 +94,12 @@ public class World : MonoBehaviour
                 g.transform.rotation = data.rotation;
             }
         }
+        
+        //go bock to menu
+        if (backToMenuRequest)
+        {
+            SceneManager.LoadScene("Scenes/Login", LoadSceneMode.Single);
+        }
     }
 
     //enqueue player position update to list
@@ -142,43 +145,6 @@ public class World : MonoBehaviour
                 chunks[x, z].CreateMesh();
             }
         }
-    }
-
-    //return the ID of a block
-    public byte GetBlockID(Vector3 positionInWorld)
-    {
-        byte height = GetHeight((int)positionInWorld.x, (int)positionInWorld.z);
-
-        //world pass
-        if (positionInWorld.x < 0 || positionInWorld.y < 0 || positionInWorld.z < 0 ||
-            positionInWorld.x >= worldSize * Data.chunkWidth || positionInWorld.y > height ||
-            positionInWorld.z >= worldSize * Data.chunkWidth)
-        {
-            return 0;
-        }
-
-        //chunk pass
-        if ((int)positionInWorld.y == height)
-        {
-            return 3;
-        }
-
-        if ((int)positionInWorld.y == 0)
-        {
-            return 1;
-        }
-
-        if ((int)positionInWorld.y > height - 3)
-        {
-            return 2;
-        }
-
-        if ((int)positionInWorld.y < height)
-        {
-            return 4;
-        }
-
-        return 0;
     }
 
     //returns if a block is on the position
@@ -286,6 +252,11 @@ public class World : MonoBehaviour
     }
 
 
+    public void BackToMenu()
+    {
+        SceneManager.LoadScene("Scenes/Login", LoadSceneMode.Single);
+    }
+    
     public Client GetClient()
     {
         return client;
@@ -297,29 +268,5 @@ public class World : MonoBehaviour
     {
         public string name;
         public byte[] textures = new byte[6];
-    }
-    
-    public void ShowDeadScreen()
-    {
-        Cursor.visible = true;
-        Cursor.lockState = CursorLockMode.None;
-        deadScreen.SetActive(true);
-        Time.timeScale = 0;
-    }
-
-    public void RespawnButton()
-    {
-        Cursor.visible = false;
-        Cursor.lockState = CursorLockMode.Confined;
-        Time.timeScale = 1;
-        player.transform.position = player.GetDefaultPlayerPosition();
-        deadScreen.SetActive(false);
-    }
-
-    public void QuitButton()
-    {
-        client.Disconnect();
-        SceneManager.LoadScene("Login");
-        deadScreen.SetActive(false);
     }
 }
