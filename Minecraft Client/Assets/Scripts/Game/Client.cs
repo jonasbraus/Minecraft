@@ -259,8 +259,12 @@ public class Client
     {
         client.Send(data, data.Length);
     }
-    
 
+    public void SaveWorld()
+    {
+        Send(new byte[]{9});
+    }
+    
     public void Disconnect()
     {
         Send(new byte[] { 4 });

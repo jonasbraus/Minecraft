@@ -317,7 +317,7 @@ public class World : MonoBehaviour
     
     public void SaveButton()
     {
-        
+        client.SaveWorld();
     }
     
     //return the ID of a block
