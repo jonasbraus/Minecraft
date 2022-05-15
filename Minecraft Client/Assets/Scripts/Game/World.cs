@@ -22,6 +22,7 @@ public class World : MonoBehaviour
 
     [SerializeField] private Player player;
     [SerializeField] private GameObject deadScreen;
+    [SerializeField] private GameObject pauseScreen;
 
     //chunks
     private Chunk[,] chunks;
@@ -281,7 +282,15 @@ public class World : MonoBehaviour
         deadScreen.SetActive(true);
         Time.timeScale = 0;
     }
-
+    
+    public void ShowPauseScreen()
+    {
+        Cursor.visible = true;
+        Cursor.lockState = CursorLockMode.None;
+        pauseScreen.SetActive(true);
+        Time.timeScale = 0;
+    }
+    
     public void RespawnButton()
     {
         Cursor.visible = false;
@@ -290,12 +299,25 @@ public class World : MonoBehaviour
         player.transform.position = player.GetDefaultPlayerPosition();
         deadScreen.SetActive(false);
     }
-
+    
+    public void ResumeButton()
+    {
+        Cursor.visible = false;
+        Cursor.lockState = CursorLockMode.Confined;
+        Time.timeScale = 1;
+        pauseScreen.SetActive(false);
+    }
+    
     public void QuitButton()
     {
         client.Disconnect();
         SceneManager.LoadScene("Login");
         deadScreen.SetActive(false);
+    }
+    
+    public void SaveButton()
+    {
+        
     }
     
     //return the ID of a block

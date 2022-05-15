@@ -276,12 +276,12 @@ public class World : MonoBehaviour
     
     private void OnApplicationQuit()
     {
-        //SaveWorld();
+        SaveWorld();
         server.Disconnect();
     }
 
 
-    private void SaveWorld()
+    public void SaveWorld()
     {
         StreamWriter writer = new StreamWriter(Application.dataPath + "\\save.world", false);
         for (int xChunk = 0; xChunk < worldSize; xChunk++)

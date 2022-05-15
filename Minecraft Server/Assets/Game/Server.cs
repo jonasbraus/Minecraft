@@ -46,6 +46,7 @@ public class Server
     //[0] = 6: player ready
     //[0] = 7: player position update
     //[0] = 8: player rotation update
+    //[0] = 9: Save the World
 
     private void Receive()
     {
@@ -241,6 +242,12 @@ public class Server
                             Send(send, e);
                         }
                     }
+                }
+                
+                //Save the World
+                if (data[0] == 9)
+                {
+                    world.SaveWorld();
                 }
             }
             catch (Exception e)

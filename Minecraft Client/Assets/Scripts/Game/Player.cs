@@ -151,6 +151,11 @@ public class Player : MonoBehaviour
         {
             world.ShowDeadScreen();
         }
+
+        if (Input.GetKeyDown(KeyCode.Escape))
+        {
+            world.ShowPauseScreen();
+        }
     }
 
     private void CalculateVelocity()
