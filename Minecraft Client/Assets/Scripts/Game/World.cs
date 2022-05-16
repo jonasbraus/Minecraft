@@ -110,19 +110,28 @@ public class World : MonoBehaviour
     //enqueue player position update to list
     public void UpdatePlayerPosition(Vector3 position, byte id)
     {
-        playersPositionsToUpdate.Enqueue(new Player.PlayerPositionUpdateData(id, position, false));
+        if(playersPositionsToUpdate.Count < 50)
+        {
+            playersPositionsToUpdate.Enqueue(new Player.PlayerPositionUpdateData(id, position, false));
+        }
     }
 
     //enqueue player rotation update to list
     public void UpdatePlayerRotation(Quaternion rotation, byte id)
     {
-        playersRotationsToUpdate.Enqueue(new Player.PlayerRotationsUpdateData(id, rotation));
+        if(playersRotationsToUpdate.Count < 50)
+        {
+            playersRotationsToUpdate.Enqueue(new Player.PlayerRotationsUpdateData(id, rotation));
+        }
     }
 
     //enqueue player create data to list
     public void AddPlayer(byte id)
     {
-        playersToCreate.Enqueue(id);
+        if(!otherPlayers.ContainsKey(id))
+        {
+            playersToCreate.Enqueue(id);
+        }
     }
 
     //creates the array for chunk objects

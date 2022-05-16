@@ -87,9 +87,9 @@ public class Chunk
                             y + Data.faceChecks[f].y, 
                             z + Data.faceChecks[f].z + chunkPosition.z * Data.chunkWidth))))
                 {
-                    if(!world.IsBlockTransparent(world.GetBlockID(new Vector3(x + chunkPosition.x * Data.chunkWidth, 
+                    if(world.GetBlockID(new Vector3(x + chunkPosition.x * Data.chunkWidth, 
                            y, 
-                           z + chunkPosition.z * Data.chunkWidth))))
+                           z + chunkPosition.z * Data.chunkWidth)) != 9)
                     {
                         for (int v = 0; v < 6; v++)
                         {
