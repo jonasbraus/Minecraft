@@ -66,9 +66,9 @@ public class World : MonoBehaviour
         {
             byte id = playersToCreate.Dequeue();
             GameObject player = Instantiate(playerPrefab);
-            player.transform.position = new Vector3((byte)player.transform.position.x,
+            player.transform.position = new Vector3((int)player.transform.position.x,
                 GetHeight((byte)player.transform.position.x, (byte)player.transform.position.z) + 2,
-                (byte)player.transform.position.z);
+                (int)player.transform.position.z);
             player.transform.SetParent(gameObject.transform);
             otherPlayers.Add(id, player);
         }
@@ -174,7 +174,7 @@ public class World : MonoBehaviour
             (int)(positionInWorld.z / Data.chunkWidth));
 
         int xInChunk = (int)(positionInWorld.x - chunk.x * Data.chunkWidth);
-        int yInChunk = (int)positionInWorld.y;
+        int yInChunk = (int)(positionInWorld.y);
         int zInChunk = (int)(positionInWorld.z - chunk.z * Data.chunkWidth);
 
         if (chunks[chunk.x, chunk.z] != null)

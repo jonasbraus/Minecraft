@@ -67,6 +67,12 @@ public class Player : MonoBehaviour
         CalculateVelocity();
         transform.Translate(velocity, Space.World);
         
+        //fix error in calculated position y
+        if (isGrounded)
+        {
+            transform.position = new Vector3(transform.position.x, (int)transform.position.y, transform.position.z);
+        }
+        
         //check if position or rotation had changed and send an update
         Vector3 position = transform.position;
         Quaternion rotation = transform.rotation;
@@ -130,12 +136,15 @@ public class Player : MonoBehaviour
         transform.Rotate(0, mouseX * Time.timeScale, 0);
 
         //send destroy block request to server
-        if (Input.GetMouseButtonDown(0) || (Input.GetAxis("Right Trigger") > 0 && lastTriggerR == 0))
+        if(Time.timeScale > 0)
         {
-            if (Physics.Raycast(camera.transform.position, camera.transform.forward, out RaycastHit hit, 8))
+            if (Input.GetMouseButtonDown(0) || (Input.GetAxis("Right Trigger") > 0 && lastTriggerR == 0))
             {
-                hit.point += camera.transform.forward / 10;
-                client.EditBlock(hit.point, 0);
+                if (Physics.Raycast(camera.transform.position, camera.transform.forward, out RaycastHit hit, 8))
+                {
+                    hit.point += camera.transform.forward / 10;
+                    client.EditBlock(hit.point, 0);
+                }
             }
         }
 
@@ -169,12 +178,15 @@ public class Player : MonoBehaviour
         }
         
         //send build block request to server
-        if (Input.GetMouseButtonDown(1) || (Input.GetAxis("Left Trigger") > 0 && lastTriggerL == 0))
+        if(Time.timeScale > 0)
         {
-            if (Physics.Raycast(camera.transform.position, camera.transform.forward, out RaycastHit hit, 8))
+            if (Input.GetMouseButtonDown(1) || (Input.GetAxis("Left Trigger") > 0 && lastTriggerL == 0))
             {
-                hit.point -= camera.transform.forward / 10;
-                client.EditBlock(hit.point, currentBlock);
+                if (Physics.Raycast(camera.transform.position, camera.transform.forward, out RaycastHit hit, 8))
+                {
+                    hit.point -= camera.transform.forward / 10;
+                    client.EditBlock(hit.point, currentBlock);
+                }
             }
         }
 
@@ -239,10 +251,10 @@ public class Player : MonoBehaviour
     private float CheckDownSpeed(float downSpeed)
     {
         if (
-            world.CheckBlock(new Vector3(transform.position.x - playerWidth, transform.position.y + downSpeed, transform.position.z - playerWidth)) ||
-            world.CheckBlock(new Vector3(transform.position.x + playerWidth, transform.position.y + downSpeed, transform.position.z - playerWidth)) ||
-            world.CheckBlock(new Vector3(transform.position.x + playerWidth, transform.position.y + downSpeed, transform.position.z + playerWidth)) ||
-            world.CheckBlock(new Vector3(transform.position.x - playerWidth, transform.position.y + downSpeed, transform.position.z + playerWidth))
+            world.CheckBlock(new Vector3(transform.position.x - playerWidth, (int)(transform.position.y + downSpeed), transform.position.z - playerWidth)) ||
+            world.CheckBlock(new Vector3(transform.position.x + playerWidth, (int)(transform.position.y + downSpeed), transform.position.z - playerWidth)) ||
+            world.CheckBlock(new Vector3(transform.position.x + playerWidth, (int)(transform.position.y + downSpeed), transform.position.z + playerWidth)) ||
+            world.CheckBlock(new Vector3(transform.position.x - playerWidth, (int)(transform.position.y + downSpeed), transform.position.z + playerWidth))
         )
         {
             isGrounded = true;
