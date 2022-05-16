@@ -387,8 +387,8 @@ public class Player : MonoBehaviour
 
     public Vector3 GetDefaultPlayerPosition()
     {
-        return new Vector3((byte)transform.position.x,
-            world.GetHeight((byte)transform.position.x, (byte)transform.position.z) + 2, (byte)transform.position.z);
+        return new Vector3(world.worldSize * Data.chunkWidth / 2,
+            world.GetHeight((byte)transform.position.x, (byte)transform.position.z) + 2, world.worldSize * Data.chunkWidth / 2);
     }
 }
 
