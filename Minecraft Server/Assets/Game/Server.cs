@@ -114,11 +114,6 @@ public class Server
                     players.Add(endPoint);
                     playerNames.Add(name);
                     playerPositions.Add(new Vector3(0, 0, 0));
-
-                    foreach (string s in playerNames)
-                    {
-                        Console.WriteLine(s);
-                    }
                 }
 
                 //edit a block in world
