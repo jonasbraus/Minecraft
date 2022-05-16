@@ -1610,7 +1610,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   material: {fileID: 2100000, guid: f4343d4c3fcbdb94b9db1c71ca64ba0a, type: 2}
   playerPrefab: {fileID: 4093383343133656139, guid: f648243c6b14d514d92cde4ec433276b, type: 3}
-  worldSize: 0
+  worldSize: 20
   player: {fileID: 1789911870}
   deadScreen: {fileID: 1849105196}
   pauseScreen: {fileID: 622656467}
@@ -1645,6 +1645,12 @@ MonoBehaviour:
   - name: Glass
     textures: 030303030303
     transparent: 1
+  - name: Brick
+    textures: 0b0b0b0b0b0b
+    transparent: 0
+  - name: Cobblestone
+    textures: 080808080808
+    transparent: 0
 --- !u!1 &965289403
 GameObject:
   m_ObjectHideFlags: 0
@@ -3668,6 +3674,8 @@ MonoBehaviour:
   - {fileID: 21300000, guid: b72adb17f9f9dc849868363fd2fbe6ab, type: 3}
   - {fileID: 21300000, guid: 24951cc96c828c44c93a0c91b9687b11, type: 3}
   - {fileID: 21300000, guid: 9720360232ff9ee45b79475a071933b0, type: 3}
+  - {fileID: 21300000, guid: f57283d516574a1409455a2b33859cf0, type: 3}
+  - {fileID: 21300000, guid: 9cc0e072410155649995525a7fde86f3, type: 3}
   highlight: {fileID: 1538641651}
 --- !u!33 &2317136213949272296
 MeshFilter:

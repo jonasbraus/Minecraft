@@ -14,11 +14,19 @@ public class Hotbar : MonoBehaviour
     
     private void Start()
     {
-        //change later:
+        hotBarItems[0] = 10;
+        hotBarItems[1] = 11;
+        hotBarItems[2] = 3;
+        hotBarItems[3] = 4;
+        hotBarItems[4] = 5;
+        hotBarItems[5] = 2;
+        hotBarItems[6] = 7;
+        hotBarItems[7] = 8;
+        hotBarItems[8] = 9;
+            
         for (int i = 0; i < 9; i++)
         {
-            itemSlots[i].sprite = itemIcons[i];
-            hotBarItems[i] = (byte)(i + 1);
+            itemSlots[i].sprite = itemIcons[hotBarItems[i] - 1];
         }
     }
 

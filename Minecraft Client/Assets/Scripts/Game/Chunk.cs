@@ -87,14 +87,19 @@ public class Chunk
                             y + Data.faceChecks[f].y, 
                             z + Data.faceChecks[f].z + chunkPosition.z * Data.chunkWidth))))
                 {
-                    for (int v = 0; v < 6; v++)
+                    if(!world.IsBlockTransparent(world.GetBlockID(new Vector3(x + chunkPosition.x * Data.chunkWidth, 
+                           y, 
+                           z + chunkPosition.z * Data.chunkWidth))))
                     {
-                        vertices.Add(Data.vertices[Data.triangles[f, v]] + new Vector3(x, y, z));
-                        triangles.Add(triangleIndex);
-                        triangleIndex++;
+                        for (int v = 0; v < 6; v++)
+                        {
+                            vertices.Add(Data.vertices[Data.triangles[f, v]] + new Vector3(x, y, z));
+                            triangles.Add(triangleIndex);
+                            triangleIndex++;
+                        }
+
+                        AddUV(textures[f]);
                     }
-                    
-                    AddUV(textures[f]);
                 }
             }
         }
