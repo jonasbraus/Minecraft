@@ -13,6 +13,7 @@ public class World : MonoBehaviour
     private int randomOffsetX, randomOffsetZ;
     private int seed = 0;
     private string dataPath;
+    private Noise noise = new Noise();
 
     //chunks
     public Chunk[,] chunks;
@@ -29,6 +30,8 @@ public class World : MonoBehaviour
 
         if (File.Exists(Application.dataPath + "\\save.world"))
         {
+            Console.WriteLine("loading world... \n");
+            
             chunks = new Chunk[worldSize, worldSize];
             for (int x = 0; x < worldSize; x++)
             {
@@ -65,6 +68,8 @@ public class World : MonoBehaviour
         }
         else
         {
+            Console.WriteLine("generate world... \n");
+            
             CreateChunks();
             CreateTrees();
         }
@@ -102,12 +107,12 @@ public class World : MonoBehaviour
         {
             for (int z = 4; z < worldSize * Data.chunkWidth - 4; z++)
             {
-                if (CheckTree(x, z))
+                if (noise.CheckTree(x, z))
                 {
                     ChunkCoord chunk = new ChunkCoord((int)(x / Data.chunkWidth),
                         (int)(z / Data.chunkWidth));
                     int xInChunk = (int)(x - chunk.x * Data.chunkWidth);
-                    int yInChunk = (int)(GetHeight(x, z));
+                    int yInChunk = (int)(noise.GetHeight(x, z, randomOffsetX, randomOffsetZ));
                     int zInChunk = (int)(z - chunk.z * Data.chunkWidth);
 
                     int height = Random.Range(5, 9);
@@ -157,11 +162,6 @@ public class World : MonoBehaviour
                             }
                         }
                     }
-                    
-                    
-                    
-                    
-
                 }
             }
         }
@@ -170,7 +170,7 @@ public class World : MonoBehaviour
     //return the ID of a block
     public byte GetBlockID(Vector3 positionInWorld)
     {
-        byte height = GetHeight((int)positionInWorld.x, (int)positionInWorld.z);
+        byte height = noise.GetHeight((int)positionInWorld.x, (int)positionInWorld.z, randomOffsetX, randomOffsetZ);
         
         //world pass
         if (positionInWorld.x < 0 || positionInWorld.y < 0 || positionInWorld.z < 0 ||
@@ -180,24 +180,37 @@ public class World : MonoBehaviour
             return 0;
         }
 
-        //chunk pass
+        //surface pass
         if ((int)positionInWorld.y == height)
         {
             return 3;
         }
 
+        //bedrock pass
         if ((int)positionInWorld.y == 0)
         {
+
             return 1;
         }
 
+        //dirt pass
         if ((int)positionInWorld.y > height - 3)
         {
             return 2;
         }
         
+        //underground pass
         if ((int)positionInWorld.y < height)
         {
+            //caves
+            if((int)positionInWorld.y > 6 && (int)positionInWorld.y < height - 8)
+            {
+                if (noise.Get3DPerlin(positionInWorld, 0, 0.18f, 0.5f))
+                {
+                    return 0;
+                }
+            }
+
             return 4;
         }
 
@@ -238,30 +251,6 @@ public class World : MonoBehaviour
         }
 
         return true;
-    }
-
-    private byte GetHeight(int x, int z)
-    {
-        float scale = 0.025f;
-        byte perlinHeight = 10;
-        byte groundHeight = 10;
-
-        byte height = (byte)(Mathf.PerlinNoise((x + randomOffsetX) * scale + 0.1f, (z + randomOffsetZ) * scale + 0.1f) * perlinHeight + groundHeight);
-        return height;
-    }
-
-    private bool CheckTree(int x, int z)
-    {
-        float scale = .99f;
-        float threshold = .96f;
-        
-        if (Mathf.PerlinNoise((x) * scale + 0.1f, (z) * scale + 0.1f) >= threshold)
-        {
-            return true;
-        }
-        
-        return false;
-
     }
 
     public void EditBlock(ChunkCoord chunk, Vector3 positionInChunk, byte blockID)
@@ -311,6 +300,6 @@ public class World : MonoBehaviour
             }
         }
         writer.Close();
-        Console.WriteLine("world saved! \n");
+        Console.WriteLine("world saved! (world.save) \n");
     }
 }

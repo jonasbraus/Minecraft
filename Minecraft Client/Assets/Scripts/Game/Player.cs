@@ -277,10 +277,10 @@ public class Player : MonoBehaviour
     private float CheckUpSpeed(float upSpeed)
     {
         if (
-            world.CheckBlock(new Vector3(transform.position.x - playerWidth, transform.position.y + upSpeed + 2f, transform.position.z - playerWidth)) ||
-            world.CheckBlock(new Vector3(transform.position.x + playerWidth, transform.position.y + upSpeed + 2f, transform.position.z - playerWidth)) ||
-            world.CheckBlock(new Vector3(transform.position.x + playerWidth, transform.position.y + upSpeed + 2f, transform.position.z + playerWidth)) ||
-            world.CheckBlock(new Vector3(transform.position.x - playerWidth, transform.position.y + upSpeed + 2f, transform.position.z + playerWidth))
+            world.CheckBlock(new Vector3(transform.position.x - playerWidth, transform.position.y + upSpeed + 1.9f, transform.position.z - playerWidth)) ||
+            world.CheckBlock(new Vector3(transform.position.x + playerWidth, transform.position.y + upSpeed + 1.9f, transform.position.z - playerWidth)) ||
+            world.CheckBlock(new Vector3(transform.position.x + playerWidth, transform.position.y + upSpeed + 1.9f, transform.position.z + playerWidth)) ||
+            world.CheckBlock(new Vector3(transform.position.x - playerWidth, transform.position.y + upSpeed + 1.9f, transform.position.z + playerWidth))
         )
         {
             return 0;

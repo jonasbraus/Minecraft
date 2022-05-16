@@ -6,6 +6,7 @@ public class Data
 {
     public static int chunkWidth = 15, chunkHeight = 250;
     public static int textureAtlasSize = 16;
+    public static int viewDistance = 9;
     
     public static readonly Vector3[] vertices =
         {

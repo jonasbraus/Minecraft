@@ -9,6 +9,7 @@ public class Chunk
     private Material material;
     private ChunkCoord chunkPosition;
     private World world;
+    public bool active = false;
     
     //rendering
     public GameObject gameObject;
@@ -136,6 +137,17 @@ public class Chunk
         meshFilter.mesh = mesh;
         meshRenderer.material = material;
         collider.sharedMesh = mesh;
+        active = true;
+    }
+
+    public void DestroyMesh()
+    {
+        meshFilter.mesh = null;
+        vertices.Clear();
+        triangles.Clear();
+        uv.Clear();
+        collider.sharedMesh = null;
+        active = false;
     }
 
     public void Edit(byte x, byte y, byte z, byte blockID)

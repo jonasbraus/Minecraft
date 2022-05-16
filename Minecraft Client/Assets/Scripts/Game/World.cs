@@ -24,10 +24,12 @@ public class World : MonoBehaviour
     [SerializeField] private Player player;
     [SerializeField] private GameObject deadScreen;
     [SerializeField] private GameObject pauseScreen;
+    private ChunkCoord lastPlayerChunkCoord = new ChunkCoord(0, 0);
 
     //chunks
     private Chunk[,] chunks;
     private Queue<ChunkCoord> chunksToUpdate = new Queue<ChunkCoord>();
+    private List<Chunk> lastActiveChunks = new List<Chunk>();
 
     //blocks
     [SerializeField] public BlockData[] blockData;
@@ -54,6 +56,17 @@ public class World : MonoBehaviour
 
     private void Update()
     {
+        ChunkCoord playerChunkCoord = new ChunkCoord((int)(player.transform.position.x / Data.chunkWidth),
+            (int)(player.transform.position.z / Data.chunkWidth));
+
+        if (lastPlayerChunkCoord.x != playerChunkCoord.x || lastPlayerChunkCoord.z != playerChunkCoord.z)
+        {
+            LoadChunks(playerChunkCoord);
+        }
+
+        lastPlayerChunkCoord = new ChunkCoord((int)(player.transform.position.x / Data.chunkWidth),
+            (int)(player.transform.position.z / Data.chunkWidth));
+        
         //update 1 chunk in list
         if (chunksToUpdate.Count > 0)
         {
@@ -107,6 +120,41 @@ public class World : MonoBehaviour
         }
     }
 
+    private void LoadChunks(ChunkCoord playerChunk)
+    {
+        List<Chunk> checkList = new List<Chunk>();
+        
+        for (int x = playerChunk.x - Data.viewDistance; x < playerChunk.x + Data.viewDistance; x++)
+        {
+            for (int z = playerChunk.z - Data.viewDistance; z < playerChunk.z + Data.viewDistance; z++)
+            {
+                if(chunks[x, z].gameObject == null)
+                {
+                    chunks[x, z].Initialize();
+                    chunks[x, z].gameObject.transform.SetParent(gameObject.transform);
+                }
+                if(!chunks[x, z].active)
+                {
+                    chunksToUpdate.Enqueue(new ChunkCoord(x, z));
+                }
+                checkList.Add(chunks[x, z]);
+            }
+        }
+
+        foreach (Chunk c in lastActiveChunks)
+        {
+            if (!checkList.Contains(c))
+            {
+                c.DestroyMesh();
+            }
+        }
+        
+        lastActiveChunks.Clear();
+
+        lastActiveChunks = new List<Chunk>(checkList);
+    }
+    
+
     //enqueue player position update to list
     public void UpdatePlayerPosition(Vector3 position, byte id)
     {
@@ -149,14 +197,14 @@ public class World : MonoBehaviour
     //initialized the chunk objects
     public void CreateChunks()
     {
-        for (int x = 0; x < worldSize; x++)
+        for (int x = worldSize / 2 - Data.viewDistance; x < worldSize / 2 + Data.viewDistance; x++)
         {
-            for (int z = 0; z < worldSize; z++)
+            for (int z = worldSize / 2 - Data.viewDistance; z < worldSize / 2 + Data.viewDistance; z++)
             {
                 chunks[x, z].Initialize();
                 chunks[x, z].gameObject.transform.SetParent(gameObject.transform);
-                chunks[x, z].AddBlocks();
-                chunks[x, z].CreateMesh();
+                chunksToUpdate.Enqueue(new ChunkCoord(x, z));
+                lastActiveChunks.Add(chunks[x, z]);
             }
         }
     }
@@ -213,11 +261,11 @@ public class World : MonoBehaviour
         int zInChunk = z - (zChunk * Data.chunkWidth);
 
         Chunk c = chunks[xChunk, zChunk];
-        for (int y = 0; y < Data.chunkHeight; y++)
+        for (int y = Data.chunkHeight - 1; y > 0; y--)
         {
-            if (c.blocks[xInChunk, y, zInChunk] == 0)
+            if (c.blocks[xInChunk, y, zInChunk] != 0)
             {
-                return (byte)(y - 1);
+                return (byte)(y + 1);
             }
         }
 
@@ -309,6 +357,8 @@ public class World : MonoBehaviour
         Time.timeScale = 1;
         player.transform.position = player.GetDefaultPlayerPosition();
         deadScreen.SetActive(false);
+        LoadChunks(new ChunkCoord((int)(player.transform.position.x / Data.chunkWidth),
+            (int)(player.transform.position.z / Data.chunkWidth)));
     }
     
     public void ResumeButton()
