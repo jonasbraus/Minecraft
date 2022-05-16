@@ -13,6 +13,7 @@ public class Player : MonoBehaviour
     private float walkSpeed;
     [SerializeField] private float jumpForce;
     [SerializeField] private World world;
+    [SerializeField] private Hotbar hotbar;
     private float playerWidth = 0.15f;
     private float playerOffsetWidth = 0.1f;
     private float horizontal;
@@ -150,32 +151,38 @@ public class Player : MonoBehaviour
 
         lastTriggerR = Input.GetAxis("Right Trigger");
 
-        if (currentBlock == 1)
-        {
-            if (Input.GetAxisRaw("Mouse ScrollWheel") < 0)
-            {
-                currentBlock = (byte)(world.blockData.Length - 1);
-            }
-            else
-            {
-                currentBlock += (byte)(Input.GetAxisRaw("Mouse ScrollWheel") * 10);
-            }
-        }
-        else if (currentBlock == world.blockData.Length - 1)
-        {
-            if (Input.GetAxisRaw("Mouse ScrollWheel") > 0)
-            {
-                currentBlock = (byte)(1);
-            }
-            else
-            {
-                currentBlock += (byte)(Input.GetAxisRaw("Mouse ScrollWheel") * 10);
-            }
-        }
-        else
-        {
-            currentBlock += (byte)(Input.GetAxisRaw("Mouse ScrollWheel") * 10);
-        }
+        // if (currentBlock == 1)
+        // {
+        //     if (Input.GetAxisRaw("Mouse ScrollWheel") < 0)
+        //     {
+        //         currentBlock = (byte)(8);
+        //     }
+        //     else
+        //     {
+        //         currentBlock += (byte)(Input.GetAxisRaw("Mouse ScrollWheel") * 10);
+        //     }
+        // }
+        // else if (currentBlock == 8)
+        // {
+        //     if (Input.GetAxisRaw("Mouse ScrollWheel") > 0)
+        //     {
+        //         currentBlock = (byte)(1);
+        //     }
+        //     else
+        //     {
+        //         currentBlock += (byte)(Input.GetAxisRaw("Mouse ScrollWheel") * 10);
+        //     }
+        // }
+        // else
+        // {
+        //     currentBlock += (byte)(Input.GetAxisRaw("Mouse ScrollWheel") * 10);
+        // }
+
+        int currentSlot = (int)hotbar.GetSelectedSlot();
+        currentSlot += (int)(-Input.GetAxisRaw("Mouse ScrollWheel") * 10);
+        if (currentSlot > 8) currentSlot = 0;
+        if (currentSlot < 0) currentSlot = 8;
+        hotbar.SelectSlot((byte)currentSlot);
         
         //send build block request to server
         if(Time.timeScale > 0)
@@ -185,7 +192,7 @@ public class Player : MonoBehaviour
                 if (Physics.Raycast(camera.transform.position, camera.transform.forward, out RaycastHit hit, 8))
                 {
                     hit.point -= camera.transform.forward / 10;
-                    client.EditBlock(hit.point, currentBlock);
+                    client.EditBlock(hit.point, hotbar.GetSelectedItemID());
                 }
             }
         }

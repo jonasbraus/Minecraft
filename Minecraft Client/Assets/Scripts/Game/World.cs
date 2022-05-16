@@ -251,6 +251,11 @@ public class World : MonoBehaviour
         }
     }
 
+    public bool IsBlockTransparent(byte id)
+    {
+        return blockData[id].transparent;
+    }
+
     private void OnApplicationQuit()
     {
         client.Disconnect();
@@ -267,6 +272,7 @@ public class World : MonoBehaviour
     {
         public string name;
         public byte[] textures = new byte[6];
+        public bool transparent;
     }
     
         

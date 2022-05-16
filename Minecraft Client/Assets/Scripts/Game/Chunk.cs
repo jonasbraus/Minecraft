@@ -83,9 +83,9 @@ public class Chunk
                     
                     AddUV(textures[f]);
                 }
-                else if(world.GetBlockID(new Vector3(x + Data.faceChecks[f].x + chunkPosition.x * Data.chunkWidth, 
+                else if(world.IsBlockTransparent(world.GetBlockID(new Vector3(x + Data.faceChecks[f].x + chunkPosition.x * Data.chunkWidth, 
                             y + Data.faceChecks[f].y, 
-                            z + Data.faceChecks[f].z + chunkPosition.z * Data.chunkWidth)) == 6)
+                            z + Data.faceChecks[f].z + chunkPosition.z * Data.chunkWidth))))
                 {
                     for (int v = 0; v < 6; v++)
                     {
