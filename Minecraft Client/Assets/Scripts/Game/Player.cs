@@ -180,6 +180,7 @@ public class Player : MonoBehaviour
 
         int currentSlot = (int)hotbar.GetSelectedSlot();
         currentSlot += (int)(-Input.GetAxisRaw("Mouse ScrollWheel") * 10);
+        
         if (currentSlot > 8) currentSlot = 0;
         if (currentSlot < 0) currentSlot = 8;
         hotbar.SelectSlot((byte)currentSlot);
