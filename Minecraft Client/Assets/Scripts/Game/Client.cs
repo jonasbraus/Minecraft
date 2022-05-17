@@ -101,7 +101,7 @@ public class Client
                     {
                         for (int z = 0; z < Data.chunkWidth; z++)
                         {
-                            blocks[x, y, z] = data[i];
+                            blocks[x, y, z] = (byte)(data[i] - 32);
                             i++;
                         }
                     }

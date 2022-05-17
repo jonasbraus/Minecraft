@@ -30,6 +30,7 @@ public class World : MonoBehaviour
     //chunks
     private Chunk[,] chunks;
     private Queue<ChunkCoord> chunksToUpdate = new Queue<ChunkCoord>();
+    private Queue<ChunkCoord> chunksToUpdate1 = new Queue<ChunkCoord>();
     private List<Chunk> lastActiveChunks = new List<Chunk>();
 
     //blocks
@@ -43,6 +44,12 @@ public class World : MonoBehaviour
     private void Start()
     {
         //get default information
+
+        if (PlayerPrefs.HasKey("viewDistance"))
+        {
+            Data.viewDistance = PlayerPrefs.GetInt("viewDistance");
+        }
+        
         name = PlayerPrefs.GetString("userName");
         ip = PlayerPrefs.GetString("serverIP");
         port = int.Parse(PlayerPrefs.GetString("port"));
@@ -72,6 +79,13 @@ public class World : MonoBehaviour
         if (chunksToUpdate.Count > 0)
         {
             ChunkCoord chunk = chunksToUpdate.Dequeue();
+            chunks[chunk.x, chunk.z].Update();
+        }
+        
+        //update 1 chunk in list
+        if (chunksToUpdate1.Count > 0)
+        {
+            ChunkCoord chunk = chunksToUpdate1.Dequeue();
             chunks[chunk.x, chunk.z].Update();
         }
 
@@ -125,7 +139,7 @@ public class World : MonoBehaviour
     {
         List<Chunk> checkList = new List<Chunk>();
         
-        chunksToUpdate.Clear();
+        chunksToUpdate1.Clear();
         
         for (int x = playerChunk.x - Data.viewDistance; x < playerChunk.x + Data.viewDistance; x++)
         {
@@ -138,7 +152,7 @@ public class World : MonoBehaviour
                 }
                 if(!chunks[x, z].active)
                 {
-                    chunksToUpdate.Enqueue(new ChunkCoord(x, z));
+                    chunksToUpdate1.Enqueue(new ChunkCoord(x, z));
                 }
                 checkList.Add(chunks[x, z]);
             }

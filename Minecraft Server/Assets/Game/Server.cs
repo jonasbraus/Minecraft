@@ -313,7 +313,7 @@ public class Server
                         {
                             for (int z = 0; z < Data.chunkWidth; z++)
                             {
-                                send[i] = world.chunks[xChunk, zChunk].blocks[x, y, z];
+                                send[i] = (byte)(world.chunks[xChunk, zChunk].blocks[x, y, z] + 32);
                                 i++;
                             }
                         }

@@ -57,7 +57,7 @@ public class World : MonoBehaviour
                         {
                             for (int z = 0; z < Data.chunkWidth; z++)
                             {
-                                chunks[xChunk, zChunk].blocks[x, y, z] = save[i];
+                                chunks[xChunk, zChunk].blocks[x, y, z] = (byte)(save[i] - 32);
                                 i++;
                             }
                         }
@@ -289,7 +289,7 @@ public class World : MonoBehaviour
                     {
                         for (int z = 0; z < Data.chunkWidth; z++)
                         {
-                            save[i] = chunks[xChunk, zChunk].blocks[x, y, z];
+                            save[i] = (byte)(chunks[xChunk, zChunk].blocks[x, y, z] + 32);
                             i++;
                         }
                     }
@@ -300,6 +300,6 @@ public class World : MonoBehaviour
             }
         }
         writer.Close();
-        Console.WriteLine("world saved! (world.save) \n");
+        Console.WriteLine("world saved! (save.world) \n");
     }
 }
