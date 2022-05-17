@@ -212,7 +212,7 @@ public class World : MonoBehaviour
             }
             
             //coal
-            if((int)positionInWorld.y > 6 && (int)positionInWorld.y < height - 3)
+            if((int)positionInWorld.y > 6 && (int)positionInWorld.y < height - 8)
             {
                 if (noise.Get3DPerlin(positionInWorld, 5, 0.28f, 0.65f))
                 {
