@@ -145,16 +145,21 @@ public class World : MonoBehaviour
         {
             for (int z = playerChunk.z - Data.viewDistance; z < playerChunk.z + Data.viewDistance; z++)
             {
-                if(chunks[x, z].gameObject == null)
+                if(z >= 0 && x >= 0 && z < worldSize && x < worldSize)
                 {
-                    chunks[x, z].Initialize();
-                    chunks[x, z].gameObject.transform.SetParent(gameObject.transform);
+                    if (chunks[x, z].gameObject == null)
+                    {
+                        chunks[x, z].Initialize();
+                        chunks[x, z].gameObject.transform.SetParent(gameObject.transform);
+                    }
+
+                    if (!chunks[x, z].active)
+                    {
+                        chunksToUpdate1.Enqueue(new ChunkCoord(x, z));
+                    }
+
+                    checkList.Add(chunks[x, z]);
                 }
-                if(!chunks[x, z].active)
-                {
-                    chunksToUpdate1.Enqueue(new ChunkCoord(x, z));
-                }
-                checkList.Add(chunks[x, z]);
             }
         }
 
