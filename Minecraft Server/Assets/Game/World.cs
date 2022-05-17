@@ -220,14 +220,14 @@ public class World : MonoBehaviour
                 }
             }
             
-            //caves
-            if((int)positionInWorld.y > 6 && (int)positionInWorld.y < height - 8)
-            {
-                if (noise.Get3DPerlin(positionInWorld, 0, 0.18f, 0.5f))
-                {
-                    return 0;
-                }
-            }
+            // //caves
+            // if((int)positionInWorld.y > 6 && (int)positionInWorld.y < height - 8)
+            // {
+            //     if (noise.Get3DPerlin(positionInWorld, 0, 0.18f, 0.5f))
+            //     {
+            //         return 0;
+            //     }
+            // }
 
             return 4;
         }
