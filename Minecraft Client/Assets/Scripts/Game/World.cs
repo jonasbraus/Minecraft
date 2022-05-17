@@ -24,6 +24,7 @@ public class World : MonoBehaviour
     [SerializeField] private Player player;
     [SerializeField] private GameObject deadScreen;
     [SerializeField] private GameObject pauseScreen;
+    [SerializeField] private GameObject optionsScreen;
     private ChunkCoord lastPlayerChunkCoord = new ChunkCoord(0, 0);
 
     //chunks
@@ -123,6 +124,8 @@ public class World : MonoBehaviour
     private void LoadChunks(ChunkCoord playerChunk)
     {
         List<Chunk> checkList = new List<Chunk>();
+        
+        chunksToUpdate.Clear();
         
         for (int x = playerChunk.x - Data.viewDistance; x < playerChunk.x + Data.viewDistance; x++)
         {
@@ -346,8 +349,20 @@ public class World : MonoBehaviour
     {
         Cursor.visible = true;
         Cursor.lockState = CursorLockMode.None;
+        optionsScreen.SetActive(false);
         pauseScreen.SetActive(true);
         Time.timeScale = 0;
+
+        if (PlayerPrefs.HasKey("viewDistance"))
+        {
+            int value = PlayerPrefs.GetInt("viewDistance");
+            if (value != Data.viewDistance)
+            {
+                Data.viewDistance = value;
+                LoadChunks(new ChunkCoord((int)(player.transform.position.x / Data.chunkWidth),
+                    (int)(player.transform.position.z / Data.chunkWidth)));
+            }
+        }
     }
     
     public void RespawnButton()
@@ -376,7 +391,13 @@ public class World : MonoBehaviour
         SceneManager.LoadScene("Login");
         deadScreen.SetActive(false);
     }
-    
+
+    public void ShowOptionsScreen()
+    {
+        pauseScreen.SetActive(false);
+        optionsScreen.SetActive(true);
+    }
+
     public void SaveButton()
     {
         client.SaveWorld();
