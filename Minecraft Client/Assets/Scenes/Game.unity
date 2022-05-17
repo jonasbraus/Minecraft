@@ -2127,7 +2127,6 @@ MonoBehaviour:
   deadScreen: {fileID: 1849105196}
   pauseScreen: {fileID: 622656467}
   optionsScreen: {fileID: 409400360}
-  camera: {fileID: 1934992311}
   blockData:
   - name: Air
     textures: 

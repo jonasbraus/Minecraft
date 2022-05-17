@@ -166,5 +166,5 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5457f26f725053d46bffb9885acfd7d8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  worldSize: 10
+  worldSize: 60
   transferDelay: 5

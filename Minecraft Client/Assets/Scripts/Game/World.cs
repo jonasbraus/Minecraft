@@ -4,7 +4,6 @@ using System.Collections.Generic;
 using System.Threading;
 using UnityEngine;
 using UnityEngine.SceneManagement;
-using UnityEngine.UI;
 
 public class World : MonoBehaviour
 {
@@ -26,7 +25,6 @@ public class World : MonoBehaviour
     [SerializeField] private GameObject deadScreen;
     [SerializeField] private GameObject pauseScreen;
     [SerializeField] private GameObject optionsScreen;
-    [SerializeField] private Camera camera;
     private ChunkCoord lastPlayerChunkCoord = new ChunkCoord(0, 0);
 
     //chunks
@@ -95,16 +93,11 @@ public class World : MonoBehaviour
         if (playersToCreate.Count > 0)
         {
             byte id = playersToCreate.Dequeue();
-            string nameOther = client.GetPlayerName(id);
             GameObject player = Instantiate(playerPrefab);
             player.transform.position = new Vector3((int)player.transform.position.x,
                 GetHeight((byte)player.transform.position.x, (byte)player.transform.position.z) + 2,
                 (int)player.transform.position.z);
             player.transform.SetParent(gameObject.transform);
-            Canvas canvas = player.GetComponentInChildren<Canvas>();
-            canvas.worldCamera = camera;
-            Text nameText = player.GetComponentInChildren<Text>();
-            nameText.text = nameOther;
             otherPlayers.Add(id, player);
         }
 
