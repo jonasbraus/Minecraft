@@ -216,7 +216,7 @@ public class World : MonoBehaviour
             {
                 if (noise.Get3DPerlin(positionInWorld, 5, 0.28f, 0.65f))
                 {
-                    return 2;
+                    return 12;
                 }
             }
             

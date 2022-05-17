@@ -83,7 +83,7 @@ public class Player : MonoBehaviour
         if (lastPosition.x != position.x || lastPosition.y != position.y || lastPosition.z != position.z)
         {
             client.SendPositionUpdate(transform.position);
-            positionText.text = position.ToString();
+            positionText.text = "X: " + (int) position.x + " Y: " + (int) position.y + " Z: " + (int) position.z;
         }
 
         if (rotation.w != lastRotation.w || rotation.x != lastRotation.x || rotation.y != lastRotation.y ||
