@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class Player : MonoBehaviour
 {
@@ -14,6 +15,7 @@ public class Player : MonoBehaviour
     [SerializeField] private float jumpForce;
     [SerializeField] private World world;
     [SerializeField] private Hotbar hotbar;
+    [SerializeField] private Text positionText;
     private float playerWidth = 0.15f;
     private float playerOffsetWidth = 0.1f;
     private float horizontal;
@@ -81,6 +83,7 @@ public class Player : MonoBehaviour
         if (lastPosition.x != position.x || lastPosition.y != position.y || lastPosition.z != position.z)
         {
             client.SendPositionUpdate(transform.position);
+            positionText.text = position.ToString();
         }
 
         if (rotation.w != lastRotation.w || rotation.x != lastRotation.x || rotation.y != lastRotation.y ||
@@ -100,6 +103,8 @@ public class Player : MonoBehaviour
         vertical = Input.GetAxisRaw("Vertical");
         mouseX = Input.GetAxis("Mouse X");
         mouseY = Input.GetAxis("Mouse Y");
+        
+        
         
         //Sprinting
         if (Input.GetKeyDown(KeyCode.LeftShift) || Input.GetButtonDown("Left Stick Button"))
