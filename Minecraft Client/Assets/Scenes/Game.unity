@@ -2135,7 +2135,7 @@ MonoBehaviour:
     textures: 090909090909
     transparent: 0
   - name: Dirt
-    textures: 111111111111
+    textures: 010101010101
     transparent: 0
   - name: Grass
     textures: 020207010202
@@ -4151,6 +4151,7 @@ MonoBehaviour:
   jumpForce: 8
   world: {fileID: 948138834}
   hotbar: {fileID: 2130779239}
+  positionText: {fileID: 0}
 --- !u!1 &1849105196
 GameObject:
   m_ObjectHideFlags: 0
