@@ -141,9 +141,9 @@ public class World : MonoBehaviour
         
         chunksToUpdate1.Clear();
         
-        for (int x = playerChunk.x - Data.viewDistance; x < playerChunk.x + Data.viewDistance; x++)
+        for (int x = playerChunk.x - Data.viewDistance; x <= playerChunk.x + Data.viewDistance; x++)
         {
-            for (int z = playerChunk.z - Data.viewDistance; z < playerChunk.z + Data.viewDistance; z++)
+            for (int z = playerChunk.z - Data.viewDistance; z <= playerChunk.z + Data.viewDistance; z++)
             {
                 if(z >= 0 && x >= 0 && z < worldSize && x < worldSize)
                 {
