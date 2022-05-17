@@ -48,6 +48,7 @@ public class Server
     //[0] = 8: player rotation update
     //[0] = 9: Save the World
     //[0] = 10: Player died
+    //[0] = 11: name request
 
     private void Receive()
     {
@@ -255,6 +256,20 @@ public class Server
                 if (data[0] == 10)
                 {
                     Console.WriteLine(playerNames[GetPlayerID(endPoint)] + " died! \n");
+                }
+                
+                //name request
+                if(data[0] == 11)
+                {
+                    int id = data[1];
+                    List<byte> send = new List<byte>();
+                    send.Add(11);
+                    byte[] nameASCII = Encoding.ASCII.GetBytes(playerNames[id]);
+                    foreach (byte b in nameASCII)
+                    {
+                        send.Add(b);
+                    }
+                    Send(send.ToArray(), endPoint);
                 }
             }
             catch (Exception e)

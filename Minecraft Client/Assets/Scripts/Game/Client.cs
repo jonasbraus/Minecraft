@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Data;
 using System.IO;
+using System.Linq;
 using System.Net;
 using System.Net.Sockets;
 using System.Text;
@@ -19,6 +20,7 @@ public class Client
     private UdpClient client;
     private int port;
     private Thread receiveThread;
+    private string nameOther = null;
 
     public Client(string hostname, int port, World world, string name)
     {
@@ -236,6 +238,19 @@ public class Client
                 
                 world.UpdatePlayerRotation(new Quaternion(x, y, z, w), id);
             }
+
+            //name request
+            if (data[0] == 11)
+            {
+                List<byte> nameASCII = new List<byte>();
+
+                for (int i = 1; i < data.Length; i++)
+                {
+                    nameASCII.Add(data[i]);
+                }
+
+                nameOther = Encoding.ASCII.GetString(nameASCII.ToArray());
+            }
         }
         
     }
@@ -263,6 +278,19 @@ public class Client
     private void Send(byte[] data)
     {
         client.Send(data, data.Length);
+    }
+
+    public string GetPlayerName(int id)
+    {
+        Send(new byte[]{11, (byte)id});
+
+        while (nameOther == null)
+        {
+        }
+
+        string ret = nameOther;
+        nameOther = null;
+        return ret;
     }
 
     public void SaveWorld()
