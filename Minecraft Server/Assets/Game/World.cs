@@ -202,6 +202,24 @@ public class World : MonoBehaviour
         //underground pass
         if ((int)positionInWorld.y < height)
         {
+            //dirt
+            if((int)positionInWorld.y > 6 && (int)positionInWorld.y < height - 3)
+            {
+                if (noise.Get3DPerlin(positionInWorld, 3, 0.28f, 0.65f))
+                {
+                    return 2;
+                }
+            }
+            
+            //coal
+            if((int)positionInWorld.y > 6 && (int)positionInWorld.y < height - 3)
+            {
+                if (noise.Get3DPerlin(positionInWorld, 5, 0.28f, 0.65f))
+                {
+                    return 2;
+                }
+            }
+            
             //caves
             if((int)positionInWorld.y > 6 && (int)positionInWorld.y < height - 8)
             {

@@ -2135,7 +2135,7 @@ MonoBehaviour:
     textures: 090909090909
     transparent: 0
   - name: Dirt
-    textures: 010101010101
+    textures: 111111111111
     transparent: 0
   - name: Grass
     textures: 020207010202
@@ -2163,6 +2163,9 @@ MonoBehaviour:
     transparent: 0
   - name: Cobblestone
     textures: 080808080808
+    transparent: 0
+  - name: Coal
+    textures: 111111111111
     transparent: 0
 --- !u!1 &965289403
 GameObject:
