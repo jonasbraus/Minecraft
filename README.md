@@ -27,3 +27,8 @@ This is an simple Minecraft Multiplayer Clone
 ![image](https://user-images.githubusercontent.com/47791011/196283127-acd485b6-e08c-45a5-ace6-b933bf9c9cd6.png)
 
 10. Click "Play" and wait until the world has been loaded
+
+11. Ready to Play
+
+![image](https://user-images.githubusercontent.com/47791011/196283573-a882f1a6-cf7a-42d8-a3ed-caede89216d8.png)
+
