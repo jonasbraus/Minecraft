@@ -24,4 +24,6 @@ This is an simple Minecraft Multiplayer Clone
 
 9. For "Port" you can enter "8051" by default
 
+![image](https://user-images.githubusercontent.com/47791011/196283127-acd485b6-e08c-45a5-ace6-b933bf9c9cd6.png)
+
 10. Click "Play" and wait until the world has been loaded
