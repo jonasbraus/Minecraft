@@ -1,6 +1,10 @@
 This is an simple Minecraft Multiplayer Clone
-Source code for the client: https://github.com/jonasbraus/Minecraft/tree/main/Minecraft%20Client/Assets/Scripts
-Source code for the server: https://github.com/jonasbraus/Minecraft/tree/main/Minecraft%20Server/Assets/Game
+
+Source code for the client: 
+https://github.com/jonasbraus/Minecraft/tree/main/Minecraft%20Client/Assets/Scripts
+
+Source code for the server: 
+https://github.com/jonasbraus/Minecraft/tree/main/Minecraft%20Server/Assets/Game
 
 1. You can download the installer under: https://github.com/jonasbraus/Minecraft/releases/download/Caves-and-Chunk-Loading/Minecraft.Clone.Online.Installer.exe
 
