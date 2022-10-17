@@ -10,7 +10,7 @@ This is an simple Minecraft Multiplayer Clone
 
 4. Start the server application
 
-5. If the server has started you should get an window looking like this:
+5. If the server has been started you should get an window looking like this:
 
 ![image](https://user-images.githubusercontent.com/47791011/196282414-16bf8441-bc08-4d2f-ab57-da2bb955d567.png)
 
